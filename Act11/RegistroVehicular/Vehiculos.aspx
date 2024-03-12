@@ -62,6 +62,40 @@
     <!---botones de acciones---->
     <asp:Button ID="btnRegistrar" runat="server" Text="Registrar" OnClick="btnRegistrar_Click" />
     <br>
+    <!---Datos en específico del dueño---->
+    <asp:Label ID="Label1" runat="server" Text="Datos del dueño:"></asp:Label>
+    <asp:DataList ID="DLInfoDueno" runat="server" DataKeyField="matricula" DataSourceID="SqlDataSourceInfoDuenos">
+        <ItemTemplate>
+            matricula:
+            <asp:Label Text='<%# Eval("matricula") %>' runat="server" ID="matriculaLabel" /><br />
+            nombre_completo:
+            <asp:Label Text='<%# Eval("nombre_completo") %>' runat="server" ID="nombre_completoLabel" /><br />
+            curp:
+            <asp:Label Text='<%# Eval("curp") %>' runat="server" ID="curpLabel" /><br />
+            rfc:
+            <asp:Label Text='<%# Eval("rfc") %>' runat="server" ID="rfcLabel" /><br />
+            sexo:
+            <asp:Label Text='<%# Eval("sexo") %>' runat="server" ID="sexoLabel" /><br />
+            estado:
+            <asp:Label Text='<%# Eval("estado") %>' runat="server" ID="estadoLabel" /><br />
+            municipio:
+            <asp:Label Text='<%# Eval("municipio") %>' runat="server" ID="municipioLabel" /><br />
+            localidad:
+            <asp:Label Text='<%# Eval("localidad") %>' runat="server" ID="localidadLabel" /><br />
+            latitud:
+            <asp:Label Text='<%# Eval("latitud") %>' runat="server" ID="latitudLabel" /><br />
+            longitud:
+            <asp:Label Text='<%# Eval("longitud") %>' runat="server" ID="longitudLabel" /><br />
+            <br />
+        </ItemTemplate>
+    </asp:DataList>
+    <asp:SqlDataSource runat="server" ID="SqlDataSourceInfoDuenos" ConnectionString='<%$ ConnectionStrings:DefaultConnection %>' SelectCommand="SELECT Usuarios.matricula, Usuarios.nombre + ' ' + Usuarios.paterno + ' ' + Usuarios.materno AS nombre_completo, Usuarios.curp, Usuarios.rfc, Usuarios.sexo, Estados.estado, Municipios.municipio, Localidades.localidad, Localidades.latitud, Localidades.longitud FROM Usuarios INNER JOIN Estados ON Usuarios.cve_estado = Estados.cve_estado INNER JOIN Municipios ON Usuarios.cve_municipio = Municipios.cve_municipio AND Estados.cve_estado = Municipios.cve_estado INNER JOIN Localidades ON Usuarios.cve_localidad = Localidades.cve_localidad AND Estados.cve_estado = Localidades.cve_estado AND Municipios.cve_municipio = Localidades.cve_municipio WHERE (Usuarios.matricula = @matricula)">
+        <SelectParameters>
+            <asp:ControlParameter ControlID="GVDuenos" PropertyName="SelectedValue" Name="matricula"></asp:ControlParameter>
+        </SelectParameters>
+    </asp:SqlDataSource>
+    <br>
+    
     <!---GVVehiculos GVDueños---->
     <asp:Label ID="Label2" runat="server" Text="GRIDVIEW vehiculos:"></asp:Label>
     <asp:GridView ID="GVVehiculos" runat="server" AutoGenerateColumns="False" DataKeyNames="numSerie" DataSourceID="SqlDataSourceVehiculos" CellPadding="4" ForeColor="#333333" GridLines="None" OnSelectedIndexChanged="GVVehiculos_SelectedIndexChanged">
@@ -108,7 +142,7 @@
 
     
     <asp:Label ID="Label3" runat="server" Text="GRIDVIEW dueños:"></asp:Label>
-    <asp:GridView ID="GVDuenos" runat="server" AutoGenerateColumns="False" DataKeyNames="matricula" DataSourceID="SqlDataSourceDuenos" CellPadding="4" ForeColor="#333333" GridLines="None">
+    <asp:GridView ID="GVDuenos" runat="server" AutoGenerateColumns="False" DataKeyNames="matricula" DataSourceID="SqlDataSourceDuenos" CellPadding="4" ForeColor="#333333" GridLines="None" OnSelectedIndexChanged="GVDuenos_SelectedIndexChanged">
         <AlternatingRowStyle BackColor="White" ForeColor="#284775"></AlternatingRowStyle>
         <Columns>
             <asp:CommandField ShowSelectButton="True" ButtonType="Button"></asp:CommandField>
@@ -150,39 +184,6 @@
     <asp:SqlDataSource runat="server" ID="SqlDataSourceDuenos" ConnectionString='<%$ ConnectionStrings:DefaultConnection %>' SelectCommand="SELECT Usuarios.matricula, Usuarios.nombre, Usuarios.paterno, Usuarios.materno, Usuarios.curp, Usuarios.rfc, Usuarios.sexo, Estados.estado, Municipios.municipio, Localidades.localidad, Localidades.latitud, Localidades.longitud, StatusDuenos.status, Vehiculos.numSerie FROM Vehiculos INNER JOIN Usuarios ON Vehiculos.matricula = Usuarios.matricula INNER JOIN Estados ON Vehiculos.cve_estado = Estados.cve_estado INNER JOIN Municipios ON Estados.cve_estado = Municipios.cve_estado AND Usuarios.cve_municipio = Municipios.cve_municipio INNER JOIN Localidades ON Estados.cve_estado = Localidades.cve_estado AND Usuarios.cve_localidad = Localidades.cve_localidad AND Municipios.cve_municipio = Localidades.cve_municipio INNER JOIN Duenos ON Usuarios.matricula = Duenos.matricula INNER JOIN StatusDuenos ON Duenos.IdStatusDuenos = StatusDuenos.IdStatusDuenos WHERE (Vehiculos.numSerie = @num)">
         <SelectParameters>
             <asp:ControlParameter ControlID="GVVehiculos" PropertyName="SelectedValue" Name="num"></asp:ControlParameter>
-        </SelectParameters>
-    </asp:SqlDataSource>
-    <br>
-    <!---Datos en específico del dueño---->
-    <asp:Label ID="Label1" runat="server" Text="Datos del dueño:"></asp:Label>
-    <asp:DataList ID="DLInfoDueno" runat="server" DataKeyField="matricula" DataSourceID="SqlDataSourceInfoDuenos">
-        <ItemTemplate>
-            matricula:
-            <asp:Label Text='<%# Eval("matricula") %>' runat="server" ID="matriculaLabel" /><br />
-            nombre_completo:
-            <asp:Label Text='<%# Eval("nombre_completo") %>' runat="server" ID="nombre_completoLabel" /><br />
-            curp:
-            <asp:Label Text='<%# Eval("curp") %>' runat="server" ID="curpLabel" /><br />
-            rfc:
-            <asp:Label Text='<%# Eval("rfc") %>' runat="server" ID="rfcLabel" /><br />
-            sexo:
-            <asp:Label Text='<%# Eval("sexo") %>' runat="server" ID="sexoLabel" /><br />
-            estado:
-            <asp:Label Text='<%# Eval("estado") %>' runat="server" ID="estadoLabel" /><br />
-            municipio:
-            <asp:Label Text='<%# Eval("municipio") %>' runat="server" ID="municipioLabel" /><br />
-            localidad:
-            <asp:Label Text='<%# Eval("localidad") %>' runat="server" ID="localidadLabel" /><br />
-            latitud:
-            <asp:Label Text='<%# Eval("latitud") %>' runat="server" ID="latitudLabel" /><br />
-            longitud:
-            <asp:Label Text='<%# Eval("longitud") %>' runat="server" ID="longitudLabel" /><br />
-            <br />
-        </ItemTemplate>
-    </asp:DataList>
-    <asp:SqlDataSource runat="server" ID="SqlDataSourceInfoDuenos" ConnectionString='<%$ ConnectionStrings:DefaultConnection %>' SelectCommand="SELECT Usuarios.matricula, Usuarios.nombre + ' ' + Usuarios.paterno + ' ' + Usuarios.materno AS nombre_completo, Usuarios.curp, Usuarios.rfc, Usuarios.sexo, Estados.estado, Municipios.municipio, Localidades.localidad, Localidades.latitud, Localidades.longitud FROM Usuarios INNER JOIN Estados ON Usuarios.cve_estado = Estados.cve_estado INNER JOIN Municipios ON Usuarios.cve_municipio = Municipios.cve_municipio AND Estados.cve_estado = Municipios.cve_estado INNER JOIN Localidades ON Usuarios.cve_localidad = Localidades.cve_localidad AND Estados.cve_estado = Localidades.cve_estado AND Municipios.cve_municipio = Localidades.cve_municipio WHERE (Usuarios.matricula = @matricula)">
-        <SelectParameters>
-            <asp:ControlParameter ControlID="GVDuenos" PropertyName="SelectedValue" Name="matricula"></asp:ControlParameter>
         </SelectParameters>
     </asp:SqlDataSource>
     

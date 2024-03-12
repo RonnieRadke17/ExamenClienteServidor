@@ -33,7 +33,7 @@ namespace Act11.RegistroVehicular
 
                     // Agregar parámetros si es necesario
                     command.Parameters.AddWithValue("@Placa", txtPlaca.Text);
-                    command.Parameters.AddWithValue("@NumSerie",int.Parse(txtNumSerie.Text));//entero
+                    command.Parameters.AddWithValue("@NumSerie",int.Parse(txtNumSerie.Text));//cambiar a varchar
                     command.Parameters.AddWithValue("@NumMotor", int.Parse(txtNumMotor.Text));//entero
                     command.Parameters.AddWithValue("@CveMarca", int.Parse(ddMarca.SelectedValue.ToString()));//entero
                     command.Parameters.AddWithValue("@CveSubmarca", int.Parse(ddSubMarca.SelectedValue.ToString()));//entero
@@ -308,6 +308,27 @@ namespace Act11.RegistroVehicular
             GoogleMaps1.Longitude = double.Parse(longitud);//si lo borro no olvidar el autopstback
              */
 
+        }
+
+        protected void GVDuenos_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            
+            GoogleMaps1.Latitude = double.Parse(GVDuenos.SelectedRow.Cells[11].Text.ToString());
+            GoogleMaps1.Longitude = double.Parse(GVDuenos.SelectedRow.Cells[12].Text.ToString());
+            //status dueno actual?
+            string status = GVDuenos.SelectedRow.Cells[13].Text.Trim();
+            
+            if (status.Contains("actual"))
+            {
+                RBDuenoActual.Checked = true;
+                RBDuenoAnterior.Checked = false; // Desmarcar el otro RadioButton
+            }
+            if (status.Contains("anterior"))
+            {
+                RBDuenoAnterior.Checked = true;
+                RBDuenoActual.Checked = false; // Desmarcar el otro RadioButton
+            }
+            GVDuenos.DataBind();
         }
     }
 }
