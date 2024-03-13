@@ -50,9 +50,10 @@
                 </div>
                 <div class="navbar-collapse collapse">
                     <ul class="nav navbar-nav">
-                        <li><a runat="server" href="~/">Inicio</a></li>
-                        <li><a runat="server" href="~/About">Acerca de</a></li>
-                        <li><a runat="server" href="~/Contact">Contacto</a></li>
+                        <li><a runat="server" href="~/">Alumnos</a></li>
+                        <li><a runat="server" href="~/About">Maestros</a></li>
+                        <li><a runat="server" href="~/Contact">Directivos</a></li>
+                        <li><a runat="server" href="~/RegistroVehicular/Vehiculos">Vehiculos</a></li>
                     </ul>
                     <asp:LoginView runat="server" ViewStateMode="Disabled">
                         <AnonymousTemplate>

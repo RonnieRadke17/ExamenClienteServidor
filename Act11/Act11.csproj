@@ -392,7 +392,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Alumnos\" />
     <Folder Include="App_Data\" />
+    <Folder Include="Directivos\" />
+    <Folder Include="Maestros\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

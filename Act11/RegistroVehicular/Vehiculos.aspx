@@ -1,8 +1,9 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Vehiculos.aspx.cs" Inherits="Act11.RegistroVehicular.Vehiculos" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
+   
     <h1>Registro vehicular</h1>   <!---Solo puede acceder el ro de directivo, los demás no pueden---->
     <br>
-    <span class="label label-primary">Placa</span>
+    <span class="label label-primary">Placañ</span>
     <asp:TextBox ID="txtPlaca" runat="server" placeholder="Placa"></asp:TextBox>
     <asp:DropDownList ID="ddMarca" runat="server" DataSourceID="SqlDataSourceMarcas" DataTextField="marca" DataValueField="cveMarca" AutoPostBack="True"></asp:DropDownList>
     <asp:SqlDataSource runat="server" ID="SqlDataSourceMarcas" ConnectionString='<%$ ConnectionStrings:DefaultConnection %>' SelectCommand="SELECT cveMarca, marca FROM Marcas"></asp:SqlDataSource>
@@ -142,10 +143,9 @@
 
     
     <asp:Label ID="Label3" runat="server" Text="GRIDVIEW dueños:"></asp:Label>
-    <asp:GridView ID="GVDuenos" runat="server" AutoGenerateColumns="False" DataKeyNames="matricula" DataSourceID="SqlDataSourceDuenos" CellPadding="4" ForeColor="#333333" GridLines="None" OnSelectedIndexChanged="GVDuenos_SelectedIndexChanged">
-        <AlternatingRowStyle BackColor="White" ForeColor="#284775"></AlternatingRowStyle>
+    <asp:GridView ID="GVDuenos" runat="server" AutoGenerateColumns="False" DataKeyNames="matricula" DataSourceID="SqlDataSourceDuenos" OnSelectedIndexChanged="GVDuenos_SelectedIndexChanged">
         <Columns>
-            <asp:CommandField ShowSelectButton="True" ButtonType="Button"></asp:CommandField>
+            <asp:CommandField ShowSelectButton="True"></asp:CommandField>
             <asp:BoundField DataField="matricula" HeaderText="matricula" ReadOnly="True" SortExpression="matricula"></asp:BoundField>
             <asp:BoundField DataField="nombre" HeaderText="nombre" SortExpression="nombre"></asp:BoundField>
             <asp:BoundField DataField="paterno" HeaderText="paterno" SortExpression="paterno"></asp:BoundField>
@@ -161,32 +161,12 @@
             <asp:BoundField DataField="status" HeaderText="status" SortExpression="status"></asp:BoundField>
             <asp:BoundField DataField="numSerie" HeaderText="numSerie" SortExpression="numSerie"></asp:BoundField>
         </Columns>
-        <EditRowStyle BackColor="#999999"></EditRowStyle>
-
-        <FooterStyle BackColor="#5D7B9D" Font-Bold="True" ForeColor="White"></FooterStyle>
-
-        <HeaderStyle BackColor="#5D7B9D" Font-Bold="True" ForeColor="White"></HeaderStyle>
-
-        <PagerStyle HorizontalAlign="Center" BackColor="#284775" ForeColor="White"></PagerStyle>
-
-        <RowStyle BackColor="#F7F6F3" ForeColor="#333333"></RowStyle>
-
-        <SelectedRowStyle BackColor="#E2DED6" Font-Bold="True" ForeColor="#333333"></SelectedRowStyle>
-
-        <SortedAscendingCellStyle BackColor="#E9E7E2"></SortedAscendingCellStyle>
-
-        <SortedAscendingHeaderStyle BackColor="#506C8C"></SortedAscendingHeaderStyle>
-
-        <SortedDescendingCellStyle BackColor="#FFFDF8"></SortedDescendingCellStyle>
-
-        <SortedDescendingHeaderStyle BackColor="#6F8DAE"></SortedDescendingHeaderStyle>
     </asp:GridView>
-    <asp:SqlDataSource runat="server" ID="SqlDataSourceDuenos" ConnectionString='<%$ ConnectionStrings:DefaultConnection %>' SelectCommand="SELECT Usuarios.matricula, Usuarios.nombre, Usuarios.paterno, Usuarios.materno, Usuarios.curp, Usuarios.rfc, Usuarios.sexo, Estados.estado, Municipios.municipio, Localidades.localidad, Localidades.latitud, Localidades.longitud, StatusDuenos.status, Vehiculos.numSerie FROM Vehiculos INNER JOIN Usuarios ON Vehiculos.matricula = Usuarios.matricula INNER JOIN Estados ON Vehiculos.cve_estado = Estados.cve_estado INNER JOIN Municipios ON Estados.cve_estado = Municipios.cve_estado AND Usuarios.cve_municipio = Municipios.cve_municipio INNER JOIN Localidades ON Estados.cve_estado = Localidades.cve_estado AND Usuarios.cve_localidad = Localidades.cve_localidad AND Municipios.cve_municipio = Localidades.cve_municipio INNER JOIN Duenos ON Usuarios.matricula = Duenos.matricula INNER JOIN StatusDuenos ON Duenos.IdStatusDuenos = StatusDuenos.IdStatusDuenos WHERE (Vehiculos.numSerie = @num)">
+    <asp:SqlDataSource runat="server" ID="SqlDataSourceDuenos" ConnectionString='<%$ ConnectionStrings:DefaultConnection %>' SelectCommand="SELECT Usuarios.matricula, Usuarios.nombre, Usuarios.paterno, Usuarios.materno, Usuarios.curp, Usuarios.rfc, Usuarios.sexo, Estados.estado, Municipios.municipio, Localidades.localidad, Localidades.latitud, Localidades.longitud, StatusDuenos.status, Vehiculos.numSerie FROM Vehiculos INNER JOIN Usuarios ON Vehiculos.matricula = Usuarios.matricula INNER JOIN Estados ON Vehiculos.cve_estado = Estados.cve_estado INNER JOIN Municipios ON Estados.cve_estado = Municipios.cve_estado AND Usuarios.cve_municipio = Municipios.cve_municipio INNER JOIN Localidades ON Estados.cve_estado = Localidades.cve_estado AND Usuarios.cve_localidad = Localidades.cve_localidad AND Municipios.cve_municipio = Localidades.cve_municipio INNER JOIN Duenos ON Usuarios.matricula = Duenos.matricula INNER JOIN StatusDuenos ON Duenos.IdStatusDuenos = StatusDuenos.IdStatusDuenos WHERE (Vehiculos.numSerie = @numSerie)">
         <SelectParameters>
-            <asp:ControlParameter ControlID="GVVehiculos" PropertyName="SelectedValue" Name="num"></asp:ControlParameter>
+            <asp:ControlParameter ControlID="GVVehiculos" PropertyName="SelectedValue" Name="numSerie"></asp:ControlParameter>
         </SelectParameters>
     </asp:SqlDataSource>
-    
     <br>
     <!---Mapa de google---->
     <map:googlemap Id="GoogleMaps1" runat="server" MapType="Hybrid" Zoom="16" Latitude="19.9798047" Longitude="-98.6853093" CssClass="Map"></map:googlemap>

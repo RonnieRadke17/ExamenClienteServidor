@@ -13,7 +13,7 @@ namespace Act11.RegistroVehicular
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-
+            Response.ContentEncoding = System.Text.Encoding.UTF8;
         }
 
         protected void btnRegistrar_Click(object sender, EventArgs e)
@@ -33,7 +33,7 @@ namespace Act11.RegistroVehicular
 
                     // Agregar parámetros si es necesario
                     command.Parameters.AddWithValue("@Placa", txtPlaca.Text);
-                    command.Parameters.AddWithValue("@NumSerie",int.Parse(txtNumSerie.Text));//cambiar a varchar
+                    command.Parameters.AddWithValue("@NumSerie",txtNumSerie.Text);//cambiar a varchar
                     command.Parameters.AddWithValue("@NumMotor", int.Parse(txtNumMotor.Text));//entero
                     command.Parameters.AddWithValue("@CveMarca", int.Parse(ddMarca.SelectedValue.ToString()));//entero
                     command.Parameters.AddWithValue("@CveSubmarca", int.Parse(ddSubMarca.SelectedValue.ToString()));//entero
@@ -295,7 +295,7 @@ namespace Act11.RegistroVehicular
             //aqui va la latitud y longitud de donde se regristró
             GoogleMaps1.Latitude = double.Parse(GVVehiculos.SelectedRow.Cells[13].Text.ToString());
             GoogleMaps1.Longitude = double.Parse(GVVehiculos.SelectedRow.Cells[14].Text.ToString());
-
+            
         }
 
         protected void ddLocalidades_SelectedIndexChanged(object sender, EventArgs e)
@@ -330,5 +330,7 @@ namespace Act11.RegistroVehicular
             }
             GVDuenos.DataBind();
         }
+
+      
     }
 }
