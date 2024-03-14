@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Vehiculos.aspx.cs" Inherits="Act11.RegistroVehicular.Vehiculos" %>
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Site.Master" UICulture="es" Culture="es-MX" AutoEventWireup="true" CodeBehind="Vehiculos.aspx.cs" Inherits="Act11.RegistroVehicular.Vehiculos" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
    
     <h1>Registro vehicular</h1>   <!---Solo puede acceder el ro de directivo, los demás no pueden---->

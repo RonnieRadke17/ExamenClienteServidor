@@ -46,13 +46,13 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" runat="server" href="~/">Nombre de la aplicación</a>
+                    <a class="navbar-brand" runat="server" href="~/">Exámen 3er Parcial :3</a>
                 </div>
                 <div class="navbar-collapse collapse">
                     <ul class="nav navbar-nav">
-                        <li><a runat="server" href="~/">Alumnos</a></li>
-                        <li><a runat="server" href="~/About">Maestros</a></li>
-                        <li><a runat="server" href="~/Contact">Directivos</a></li>
+                        <li><a runat="server" href="~/Alumnos/Alumnos">Alumnos</a></li>
+                        <li><a runat="server" href="~/Maestros/Maestros">Maestros</a></li>
+                        <li><a runat="server" href="~/Directivos/Directivos">Directivos</a></li>
                         <li><a runat="server" href="~/RegistroVehicular/Vehiculos">Vehiculos</a></li>
                     </ul>
                     <asp:LoginView runat="server" ViewStateMode="Disabled">

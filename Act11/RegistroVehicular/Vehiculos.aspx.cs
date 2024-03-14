@@ -11,6 +11,7 @@ namespace Act11.RegistroVehicular
 {
     public partial class Vehiculos : System.Web.UI.Page
     {
+        WSCS.WSCSSoapClient WS = new WSCS.WSCSSoapClient();
         protected void Page_Load(object sender, EventArgs e)
         {
             Response.ContentEncoding = System.Text.Encoding.UTF8;
@@ -33,8 +34,8 @@ namespace Act11.RegistroVehicular
 
                     // Agregar parámetros si es necesario
                     command.Parameters.AddWithValue("@Placa", txtPlaca.Text);
-                    command.Parameters.AddWithValue("@NumSerie",txtNumSerie.Text);//cambiar a varchar
-                    command.Parameters.AddWithValue("@NumMotor", int.Parse(txtNumMotor.Text));//entero
+                    command.Parameters.AddWithValue("@NumSerie",WS.Encriptar(txtNumSerie.Text));//cambiar a varchar encriptar
+                    command.Parameters.AddWithValue("@NumMotor",WS.Encriptar(txtNumMotor.Text));//varchar encriptar
                     command.Parameters.AddWithValue("@CveMarca", int.Parse(ddMarca.SelectedValue.ToString()));//entero
                     command.Parameters.AddWithValue("@CveSubmarca", int.Parse(ddSubMarca.SelectedValue.ToString()));//entero
                     command.Parameters.AddWithValue("@CveModelo", int.Parse(ddModelo.SelectedValue.ToString()));//entero
@@ -272,9 +273,9 @@ namespace Act11.RegistroVehicular
 
         protected void GVVehiculos_SelectedIndexChanged(object sender, EventArgs e)
         {
-            txtNumSerie.Text = GVVehiculos.SelectedRow.Cells[1].Text.ToString();
+            txtNumSerie.Text =WS.Desencriptar(GVVehiculos.SelectedRow.Cells[1].Text.ToString());
             txtPlaca.Text = GVVehiculos.SelectedRow.Cells[2].Text.ToString();
-            txtNumMotor.Text = GVVehiculos.SelectedRow.Cells[3].Text.ToString();
+            txtNumMotor.Text = WS.Desencriptar(GVVehiculos.SelectedRow.Cells[3].Text.ToString());
             ddMarca.SelectedValue = ObtenerIdMarcaPorNombre(GVVehiculos.SelectedRow.Cells[4].Text.ToString()).ToString();
             int marca = ObtenerIdMarcaPorNombre(GVVehiculos.SelectedRow.Cells[4].Text.ToString());
             ddSubMarca.DataBind();//poner el dataBind es lo que hace que aparesca la submarca porque las actualiza a las de la marca
@@ -282,15 +283,27 @@ namespace Act11.RegistroVehicular
             ddModelo.SelectedValue = ObtenerIdModeloPorNombre(GVVehiculos.SelectedRow.Cells[6].Text.ToString()).ToString();
             ddColor.SelectedValue = ObtenerIdColorPorNombre(GVVehiculos.SelectedRow.Cells[7].Text.ToString()).ToString();
             ddCombustible.SelectedValue = ObtenerIdCombustiblePorNombre(GVVehiculos.SelectedRow.Cells[8].Text.ToString()).ToString();
-            ddEstados.SelectedValue = ObtenerIdEstadoPorNombre(GVVehiculos.SelectedRow.Cells[9].Text.ToString()).ToString();
-            int estado = ObtenerIdEstadoPorNombre(GVVehiculos.SelectedRow.Cells[9].Text.ToString());
-            ddMunicipios.DataBind();
-            //nombre municipio y id estado
-            ddMunicipios.SelectedValue = ObtenerIdMunicipioPorNombre(GVVehiculos.SelectedRow.Cells[10].Text.ToString(),estado).ToString();
-            int municipio = ObtenerIdMunicipioPorNombre(GVVehiculos.SelectedRow.Cells[10].Text.ToString(), estado);
-            ddLocalidades.DataBind();
-            ddLocalidades.SelectedValue = ObtenerIdLocalidadPorNombre(GVVehiculos.SelectedRow.Cells[11].Text.ToString(),estado,municipio).ToString();
+
+            txtPlaca.Text = GVVehiculos.SelectedRow.Cells[9].Text.ToString();
             //tengo que hacer una consulta por cada campo porque me da el nombre 
+           
+            /*
+            ddMunicipios.ClearSelection();
+            ListItem municipioItem = ddMunicipios.Items.FindByText(GVVehiculos.SelectedRow.Cells[10].Text.ToString());
+            if (municipioItem != null)
+            {
+                municipioItem.Selected = true;
+            }
+
+            ddLocalidades.ClearSelection();
+            ListItem localidadItem = ddLocalidades.Items.FindByText(GVVehiculos.SelectedRow.Cells[11].Text.ToString());
+            if (localidadItem != null)
+            {
+                localidadItem.Selected = true;
+            }
+            */
+
+
             txtMatricula.Text= GVVehiculos.SelectedRow.Cells[12].Text.ToString();
             //aqui va la latitud y longitud de donde se regristró
             GoogleMaps1.Latitude = double.Parse(GVVehiculos.SelectedRow.Cells[13].Text.ToString());
