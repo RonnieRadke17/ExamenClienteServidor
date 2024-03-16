@@ -5,6 +5,9 @@
     <br>
     <span class="label label-primary">Placañ</span>
     <asp:TextBox ID="txtPlaca" runat="server" placeholder="Placa"></asp:TextBox>
+    <asp:Button ID="btnBuscar" runat="server" Text="Buscar" OnClick="btnBuscar_Click" />
+    <asp:Button ID="btnLimpiar" runat="server" Text="Limpiar" OnClick="btnLimpiar_Click" />
+
     <asp:DropDownList ID="ddMarca" runat="server" DataSourceID="SqlDataSourceMarcas" DataTextField="marca" DataValueField="cveMarca" AutoPostBack="True"></asp:DropDownList>
     <asp:SqlDataSource runat="server" ID="SqlDataSourceMarcas" ConnectionString='<%$ ConnectionStrings:DefaultConnection %>' SelectCommand="SELECT cveMarca, marca FROM Marcas"></asp:SqlDataSource>
     
@@ -62,10 +65,12 @@
     
     <!---botones de acciones---->
     <asp:Button ID="btnRegistrar" runat="server" Text="Registrar" OnClick="btnRegistrar_Click" />
+    <asp:Button ID="btnModificar" runat="server" Text="Modificar" OnClick="btnModificar_Click" />
+    <asp:Button ID="bntEliminar" runat="server" Text="Eliminar" OnClick="bntEliminar_Click" />
     <br>
     <!---Datos en específico del dueño---->
     <asp:Label ID="Label1" runat="server" Text="Datos del dueño:"></asp:Label>
-    <asp:DataList ID="DLInfoDueno" runat="server" DataKeyField="matricula" DataSourceID="SqlDataSourceInfoDuenos">
+    <asp:DataList ID="DLInfoDueno" runat="server" DataKeyField="matricula" DataSourceID="SqlDataSourceInfoDuenos" OnItemDataBound="DLInfoDueno_ItemDataBound">
         <ItemTemplate>
             matricula:
             <asp:Label Text='<%# Eval("matricula") %>' runat="server" ID="matriculaLabel" /><br />
@@ -99,54 +104,63 @@
     
     <!---GVVehiculos GVDueños---->
     <asp:Label ID="Label2" runat="server" Text="GRIDVIEW vehiculos:"></asp:Label>
-    <asp:GridView ID="GVVehiculos" runat="server" AutoGenerateColumns="False" DataKeyNames="numSerie" DataSourceID="SqlDataSourceVehiculos" CellPadding="4" ForeColor="#333333" GridLines="None" OnSelectedIndexChanged="GVVehiculos_SelectedIndexChanged">
-    <AlternatingRowStyle BackColor="White" ForeColor="#284775"></AlternatingRowStyle>
-    <Columns>
-        <asp:CommandField ShowSelectButton="True" ButtonType="Button"></asp:CommandField>
-        <asp:BoundField DataField="numSerie" HeaderText="numSerie" SortExpression="numSerie"></asp:BoundField>
-        <asp:BoundField DataField="placa" HeaderText="placa" SortExpression="placa"></asp:BoundField>
-        <asp:BoundField DataField="numMotor" HeaderText="numMotor" SortExpression="numMotor"></asp:BoundField>
-        <asp:BoundField DataField="marca" HeaderText="marca" SortExpression="marca"></asp:BoundField>
-        <asp:BoundField DataField="submarca" HeaderText="submarca" SortExpression="submarca"></asp:BoundField>
-        <asp:BoundField DataField="modelo" HeaderText="modelo" SortExpression="modelo"></asp:BoundField>
-        <asp:BoundField DataField="colores" HeaderText="colores" SortExpression="colores"></asp:BoundField>
-        <asp:BoundField DataField="combustible" HeaderText="combustible" SortExpression="combustible"></asp:BoundField>
-        <asp:BoundField DataField="estado" HeaderText="estado" SortExpression="estado"></asp:BoundField>
-        <asp:BoundField DataField="municipio" HeaderText="municipio" SortExpression="municipio"></asp:BoundField>
-        <asp:BoundField DataField="localidad" HeaderText="localidad" SortExpression="localidad"></asp:BoundField>
-        <asp:BoundField DataField="matricula" HeaderText="matricula" SortExpression="matricula"></asp:BoundField>
-        <asp:BoundField DataField="latitud" HeaderText="latitud" SortExpression="latitud"></asp:BoundField>
-        <asp:BoundField DataField="longitud" HeaderText="longitud" SortExpression="longitud"></asp:BoundField>
-    </Columns>
-    <EditRowStyle BackColor="#999999"></EditRowStyle>
+    <asp:GridView ID="GVVehiculos" runat="server" AutoGenerateColumns="False" DataKeyNames="placa,cveMarca,cveSubmarca,cveModelo,cveCombustible,cve_estado,numSerie" DataSourceID="SqlDataSourceVehiculos" CellPadding="4" ForeColor="#333333" GridLines="None" OnSelectedIndexChanged="GVVehiculos_SelectedIndexChanged">
+        <AlternatingRowStyle BackColor="White" ForeColor="#284775"></AlternatingRowStyle>
+        <Columns>
+            <asp:CommandField ShowSelectButton="True" ButtonType="Button"></asp:CommandField>
+            <asp:BoundField DataField="placa" HeaderText="placa" ReadOnly="True" SortExpression="placa"></asp:BoundField>
+            <asp:BoundField DataField="numSerie" HeaderText="numSerie" SortExpression="numSerie"></asp:BoundField>
+            <asp:BoundField DataField="numMotor" HeaderText="numMotor" SortExpression="numMotor"></asp:BoundField>
+            <asp:BoundField DataField="marca" HeaderText="marca" SortExpression="marca"></asp:BoundField>
+            <asp:BoundField DataField="submarca" HeaderText="submarca" SortExpression="submarca"></asp:BoundField>
+            <asp:BoundField DataField="modelo" HeaderText="modelo" SortExpression="modelo"></asp:BoundField>
+            <asp:BoundField DataField="colores" HeaderText="colores" SortExpression="colores"></asp:BoundField>
+            <asp:BoundField DataField="combustible" HeaderText="combustible" SortExpression="combustible"></asp:BoundField>
+            <asp:BoundField DataField="estado" HeaderText="estado" SortExpression="estado"></asp:BoundField>
+            <asp:BoundField DataField="municipio" HeaderText="municipio" SortExpression="municipio"></asp:BoundField>
+            <asp:BoundField DataField="localidad" HeaderText="localidad" SortExpression="localidad"></asp:BoundField>
+            <asp:BoundField DataField="matricula" HeaderText="matricula" SortExpression="matricula"></asp:BoundField>
+            <asp:BoundField DataField="latitud" HeaderText="latitud" SortExpression="latitud"></asp:BoundField>
+            <asp:BoundField DataField="longitud" HeaderText="longitud" SortExpression="longitud"></asp:BoundField>
+            <asp:BoundField DataField="cveMarca" HeaderText="cveMarca" ReadOnly="True" InsertVisible="False" SortExpression="cveMarca" ></asp:BoundField>
+            <asp:BoundField DataField="cveSubmarca" HeaderText="cveSubmarca" ReadOnly="True" InsertVisible="False" SortExpression="cveSubmarca" ></asp:BoundField>
+            <asp:BoundField DataField="cveModelo" HeaderText="cveModelo" ReadOnly="True" SortExpression="cveModelo" ></asp:BoundField>
+            <asp:BoundField DataField="cveColor" HeaderText="cveColor" SortExpression="cveColor" ></asp:BoundField>
+            <asp:BoundField DataField="cveCombustible" HeaderText="cveCombustible" ReadOnly="True" SortExpression="cveCombustible" ></asp:BoundField>
+            <asp:BoundField DataField="cve_estado" HeaderText="cve_estado" ReadOnly="True" SortExpression="cve_estado"></asp:BoundField>
+            <asp:BoundField DataField="cve_municipio" HeaderText="cve_municipio" SortExpression="cve_municipio"></asp:BoundField>
+            <asp:BoundField DataField="cve_localidad" HeaderText="cve_localidad" SortExpression="cve_localidad"></asp:BoundField>
+        </Columns>
+        <EditRowStyle BackColor="#999999"></EditRowStyle>
 
-    <FooterStyle BackColor="#5D7B9D" Font-Bold="True" ForeColor="White"></FooterStyle>
+        <FooterStyle BackColor="#5D7B9D" Font-Bold="True" ForeColor="White"></FooterStyle>
 
-    <HeaderStyle BackColor="#5D7B9D" Font-Bold="True" ForeColor="White"></HeaderStyle>
+        <HeaderStyle BackColor="#5D7B9D" Font-Bold="True" ForeColor="White"></HeaderStyle>
 
-    <PagerStyle HorizontalAlign="Center" BackColor="#284775" ForeColor="White"></PagerStyle>
+        <PagerStyle HorizontalAlign="Center" BackColor="#284775" ForeColor="White"></PagerStyle>
 
-    <RowStyle BackColor="#F7F6F3" ForeColor="#333333"></RowStyle>
+        <RowStyle BackColor="#F7F6F3" ForeColor="#333333"></RowStyle>
 
-    <SelectedRowStyle BackColor="#E2DED6" Font-Bold="True" ForeColor="#333333"></SelectedRowStyle>
+        <SelectedRowStyle BackColor="#E2DED6" Font-Bold="True" ForeColor="#333333"></SelectedRowStyle>
 
-    <SortedAscendingCellStyle BackColor="#E9E7E2"></SortedAscendingCellStyle>
+        <SortedAscendingCellStyle BackColor="#E9E7E2"></SortedAscendingCellStyle>
 
-    <SortedAscendingHeaderStyle BackColor="#506C8C"></SortedAscendingHeaderStyle>
+        <SortedAscendingHeaderStyle BackColor="#506C8C"></SortedAscendingHeaderStyle>
 
-    <SortedDescendingCellStyle BackColor="#FFFDF8"></SortedDescendingCellStyle>
+        <SortedDescendingCellStyle BackColor="#FFFDF8"></SortedDescendingCellStyle>
 
-    <SortedDescendingHeaderStyle BackColor="#6F8DAE"></SortedDescendingHeaderStyle>
-</asp:GridView>
+        <SortedDescendingHeaderStyle BackColor="#6F8DAE"></SortedDescendingHeaderStyle>
+    </asp:GridView>
 
-<asp:SqlDataSource runat="server" ID="SqlDataSourceVehiculos" ConnectionString='<%$ ConnectionStrings:DefaultConnection %>' SelectCommand="SELECT numSerie, placa, numMotor, marca, submarca, modelo, colores, combustible, estado, municipio, localidad, matricula, latitud, longitud FROM GVVehiculos"></asp:SqlDataSource>
-
+    <asp:SqlDataSource runat="server" ID="SqlDataSourceVehiculos" ConnectionString='<%$ ConnectionStrings:DefaultConnection %>' SelectCommand="SELECT Vehiculos.placa, Vehiculos.numSerie, Vehiculos.numMotor, Marcas.marca, SubMarcas.submarca, Modelos.modelo, Colores.colores, Combustibles.combustible, Estados.estado, Municipios.municipio, Localidades.localidad, Vehiculos.matricula, Localidades.latitud, Localidades.longitud, Marcas.cveMarca, SubMarcas.cveSubmarca, Modelos.cveModelo, Colores.cveColor, Combustibles.cveCombustible, Estados.cve_estado, Municipios.cve_municipio, Localidades.cve_localidad FROM Vehiculos INNER JOIN Marcas ON Vehiculos.cveMarca = Marcas.cveMarca INNER JOIN SubMarcas ON Vehiculos.cveSubmarca = SubMarcas.cveSubmarca INNER JOIN Modelos ON Vehiculos.cveModelo = Modelos.cveModelo INNER JOIN Colores ON Vehiculos.cveColor = Colores.cveColor INNER JOIN Combustibles ON Vehiculos.cveCombustible = Combustibles.cveCombustible INNER JOIN Estados ON Vehiculos.cve_estado = Estados.cve_estado INNER JOIN Municipios ON Estados.cve_estado = Municipios.cve_estado AND Vehiculos.cve_municipio = Municipios.cve_municipio INNER JOIN Localidades ON Estados.cve_estado = Localidades.cve_estado AND Vehiculos.cve_localidad = Localidades.cve_localidad AND Municipios.cve_municipio = Localidades.cve_municipio"></asp:SqlDataSource>
+    
+    
     
     <asp:Label ID="Label3" runat="server" Text="GRIDVIEW dueños:"></asp:Label>
-    <asp:GridView ID="GVDuenos" runat="server" AutoGenerateColumns="False" DataKeyNames="matricula" DataSourceID="SqlDataSourceDuenos" OnSelectedIndexChanged="GVDuenos_SelectedIndexChanged">
+    <asp:GridView ID="GVDuenos" runat="server" AutoGenerateColumns="False" DataSourceID="SqlDataSourceDuenos" DataKeyNames="matricula" OnSelectedIndexChanged="GVDuenos_SelectedIndexChanged">
         <Columns>
             <asp:CommandField ShowSelectButton="True"></asp:CommandField>
-            <asp:BoundField DataField="matricula" HeaderText="matricula" ReadOnly="True" SortExpression="matricula"></asp:BoundField>
+            <asp:BoundField DataField="matricula" HeaderText="matricula" SortExpression="matricula"></asp:BoundField>
             <asp:BoundField DataField="nombre" HeaderText="nombre" SortExpression="nombre"></asp:BoundField>
             <asp:BoundField DataField="paterno" HeaderText="paterno" SortExpression="paterno"></asp:BoundField>
             <asp:BoundField DataField="materno" HeaderText="materno" SortExpression="materno"></asp:BoundField>
@@ -160,13 +174,12 @@
             <asp:BoundField DataField="longitud" HeaderText="longitud" SortExpression="longitud"></asp:BoundField>
             <asp:BoundField DataField="status" HeaderText="status" SortExpression="status"></asp:BoundField>
             <asp:BoundField DataField="numSerie" HeaderText="numSerie" SortExpression="numSerie"></asp:BoundField>
+            <asp:BoundField DataField="cve_estado" HeaderText="cve_estado" SortExpression="cve_estado"></asp:BoundField>
+            <asp:BoundField DataField="cve_municipio" HeaderText="cve_municipio" SortExpression="cve_municipio"></asp:BoundField>
+            <asp:BoundField DataField="cve_localidad" HeaderText="cve_localidad" SortExpression="cve_localidad"></asp:BoundField>
         </Columns>
     </asp:GridView>
-    <asp:SqlDataSource runat="server" ID="SqlDataSourceDuenos" ConnectionString='<%$ ConnectionStrings:DefaultConnection %>' SelectCommand="SELECT Usuarios.matricula, Usuarios.nombre, Usuarios.paterno, Usuarios.materno, Usuarios.curp, Usuarios.rfc, Usuarios.sexo, Estados.estado, Municipios.municipio, Localidades.localidad, Localidades.latitud, Localidades.longitud, StatusDuenos.status, Vehiculos.numSerie FROM Vehiculos INNER JOIN Usuarios ON Vehiculos.matricula = Usuarios.matricula INNER JOIN Estados ON Vehiculos.cve_estado = Estados.cve_estado INNER JOIN Municipios ON Estados.cve_estado = Municipios.cve_estado AND Usuarios.cve_municipio = Municipios.cve_municipio INNER JOIN Localidades ON Estados.cve_estado = Localidades.cve_estado AND Usuarios.cve_localidad = Localidades.cve_localidad AND Municipios.cve_municipio = Localidades.cve_municipio INNER JOIN Duenos ON Usuarios.matricula = Duenos.matricula INNER JOIN StatusDuenos ON Duenos.IdStatusDuenos = StatusDuenos.IdStatusDuenos WHERE (Vehiculos.numSerie = @numSerie)">
-        <SelectParameters>
-            <asp:ControlParameter ControlID="GVVehiculos" PropertyName="SelectedValue" Name="numSerie"></asp:ControlParameter>
-        </SelectParameters>
-    </asp:SqlDataSource>
+    <asp:SqlDataSource runat="server" ID="SqlDataSourceDuenos" ConnectionString='<%$ ConnectionStrings:DefaultConnection %>' SelectCommand="SELECT matricula, nombre, paterno, materno, curp, rfc, sexo, estado, municipio, localidad, latitud, longitud, status, numSerie, cve_estado, cve_municipio, cve_localidad FROM GVDuenos"></asp:SqlDataSource>
     <br>
     <!---Mapa de google---->
     <map:googlemap Id="GoogleMaps1" runat="server" MapType="Hybrid" Zoom="16" Latitude="19.9798047" Longitude="-98.6853093" CssClass="Map"></map:googlemap>

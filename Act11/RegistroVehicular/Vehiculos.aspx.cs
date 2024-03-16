@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
@@ -15,6 +16,7 @@ namespace Act11.RegistroVehicular
         protected void Page_Load(object sender, EventArgs e)
         {
             Response.ContentEncoding = System.Text.Encoding.UTF8;
+           
         }
 
         protected void btnRegistrar_Click(object sender, EventArgs e)
@@ -44,7 +46,7 @@ namespace Act11.RegistroVehicular
                     command.Parameters.AddWithValue("@CveEstado", int.Parse(ddEstados.SelectedValue.ToString()));//entero
                     command.Parameters.AddWithValue("@CveMunicipio", int.Parse(ddMunicipios.SelectedValue.ToString()));//entero
                     command.Parameters.AddWithValue("@CveLocalidad", int.Parse(ddLocalidades.SelectedValue.ToString()));//entero
-                    command.Parameters.AddWithValue("@Matricula",txtMatricula.Text);//String
+                    command.Parameters.AddWithValue("@Matricula",WS.Encriptar(txtMatricula.Text));//String aqui se tiene que encriptar
 
                     if (RBDuenoActual.Checked)
                     {
@@ -67,248 +69,33 @@ namespace Act11.RegistroVehicular
             //Console.WriteLine("Procedimiento almacenado ejecutado con éxito.");
             //Console.ReadLine();
             GVVehiculos.DataBind();
-        }
-
-        private int ObtenerIdMarcaPorNombre(string nombreMarca)
-        {
-            int idMarca = 0;
-            // Utiliza tu conexión y tu consulta SQL para obtener el ID de la marca
-            using (SqlConnection connection = new SqlConnection("Data Source=CR7\\SQLEXPRESS;Initial Catalog=2231122109;User ID=sa;Password=aaa"))
-            {
-                connection.Open();
-
-                string query = "SELECT cveMarca FROM Marcas WHERE marca = @NombreMarca";
-                using (SqlCommand command = new SqlCommand(query, connection))
-                {
-                    command.Parameters.AddWithValue("@NombreMarca", nombreMarca);
-
-                    object result = command.ExecuteScalar();
-                    if (result != null)
-                    {
-                        // Si se encuentra un resultado, conviértelo a entero
-                        idMarca = Convert.ToInt32(result);
-                    }
-                }
-            }
-            return idMarca;
-        }
-
-        private int ObtenerIdSubMarcaPorNombre(string nombreSubMarca, int idMarca)
-        {
-            int idSubMarca = 0;
-
-            // Utiliza tu conexión y tu consulta SQL para obtener el ID de la submarca
-            using (SqlConnection connection = new SqlConnection("Data Source=CR7\\SQLEXPRESS;Initial Catalog=2231122109;User ID=sa;Password=aaa"))
-            {
-                connection.Open();
-
-                string query = "SELECT cveSubmarca FROM SubMarcas WHERE submarca = @NombreSubMarca AND cveMarca = @IdMarca";
-                using (SqlCommand command = new SqlCommand(query, connection))
-                {
-                    command.Parameters.AddWithValue("@NombreSubMarca", nombreSubMarca);
-                    command.Parameters.AddWithValue("@IdMarca", idMarca);
-
-                    object result = command.ExecuteScalar();
-                    if (result != null)
-                    {
-                        // Si se encuentra un resultado, conviértelo a entero
-                        idSubMarca = Convert.ToInt32(result);
-                    }
-                }
-            }
-
-            return idSubMarca;
-        }
-
-        private int ObtenerIdModeloPorNombre(string nombreModelo)
-        {
-            int idModelo = 0;
-            // Utiliza tu conexión y tu consulta SQL para obtener el ID de la marca
-            using (SqlConnection connection = new SqlConnection("Data Source=CR7\\SQLEXPRESS;Initial Catalog=2231122109;User ID=sa;Password=aaa"))
-            {
-                connection.Open();
-
-                string query = "SELECT cveModelo FROM Modelos WHERE modelo = @nombreModelo";
-                using (SqlCommand command = new SqlCommand(query, connection))
-                {
-                    command.Parameters.AddWithValue("@nombreModelo", nombreModelo);
-
-                    object result = command.ExecuteScalar();
-                    if (result != null)
-                    {
-                        // Si se encuentra un resultado, conviértelo a entero
-                        idModelo = Convert.ToInt32(result);
-                    }
-                }
-            }
-            return idModelo;
-        }
-
-        private int ObtenerIdColorPorNombre(string nombreColor)
-        {
-            int idColor = 0;
-            // Utiliza tu conexión y tu consulta SQL para obtener el ID de la marca
-            using (SqlConnection connection = new SqlConnection("Data Source=CR7\\SQLEXPRESS;Initial Catalog=2231122109;User ID=sa;Password=aaa"))
-            {
-                connection.Open();
-
-                string query = "SELECT cveColor FROM Colores WHERE colores = @nombreColor";
-                using (SqlCommand command = new SqlCommand(query, connection))
-                {
-                    command.Parameters.AddWithValue("@nombreColor", nombreColor);
-
-                    object result = command.ExecuteScalar();
-                    if (result != null)
-                    {
-                        // Si se encuentra un resultado, conviértelo a entero
-                        idColor = Convert.ToInt32(result);
-                    }
-                }
-            }
-            return idColor;
-        }
-
-        private int ObtenerIdCombustiblePorNombre(string nombreCombustible)
-        {
-            int idCombustible = 0;
-            // Utiliza tu conexión y tu consulta SQL para obtener el ID de la marca
-            using (SqlConnection connection = new SqlConnection("Data Source=CR7\\SQLEXPRESS;Initial Catalog=2231122109;User ID=sa;Password=aaa"))
-            {
-                connection.Open();
-
-                string query = "SELECT cveCombustible FROM Combustibles WHERE combustible = @nombreCombustible";
-                using (SqlCommand command = new SqlCommand(query, connection))
-                {
-                    command.Parameters.AddWithValue("@nombreCombustible", nombreCombustible);
-
-                    object result = command.ExecuteScalar();
-                    if (result != null)
-                    {
-                        // Si se encuentra un resultado, conviértelo a entero
-                        idCombustible = Convert.ToInt32(result);
-                    }
-                }
-            }
-            return idCombustible;
-        }
-
-        private int ObtenerIdEstadoPorNombre(string nombreEstado)
-        {
-            int idEstado = 0;
-            // Utiliza tu conexión y tu consulta SQL para obtener el ID de la marca
-            using (SqlConnection connection = new SqlConnection("Data Source=CR7\\SQLEXPRESS;Initial Catalog=2231122109;User ID=sa;Password=aaa"))
-            {
-                connection.Open();
-
-                string query = "SELECT cve_estado FROM Estados WHERE estado = @nombreEstado";
-                using (SqlCommand command = new SqlCommand(query, connection))
-                {
-                    command.Parameters.AddWithValue("@nombreEstado", nombreEstado);
-
-                    object result = command.ExecuteScalar();
-                    if (result != null)
-                    {
-                        // Si se encuentra un resultado, conviértelo a entero
-                        idEstado = Convert.ToInt32(result);
-                    }
-                }
-            }
-            return idEstado;
-        }
-
-        private int ObtenerIdMunicipioPorNombre(string nombreMunicipio, int idEstado)
-        {
-            int idMunicipio = 0;
-
-            // Utiliza tu conexión y tu consulta SQL para obtener el ID de la submarca
-            using (SqlConnection connection = new SqlConnection("Data Source=CR7\\SQLEXPRESS;Initial Catalog=2231122109;User ID=sa;Password=aaa"))
-            {
-                connection.Open();
-
-                string query = "SELECT cve_municipio FROM Municipios WHERE municipio = @nombreMunicipio AND cve_estado = @idEstado";
-                using (SqlCommand command = new SqlCommand(query, connection))
-                {
-                    command.Parameters.AddWithValue("@nombreMunicipio", nombreMunicipio);
-                    command.Parameters.AddWithValue("@idEstado", idEstado);
-
-                    object result = command.ExecuteScalar();
-                    if (result != null)
-                    {
-                        // Si se encuentra un resultado, conviértelo a entero
-                        idMunicipio = Convert.ToInt32(result);
-                    }
-                }
-            }
-
-            return idMunicipio;
-        }
-
-        private int ObtenerIdLocalidadPorNombre(string nombreLocalidad, int idEstado,int idMunicipio)
-        {
-            int idLocalidad = 0;
-
-            // Utiliza tu conexión y tu consulta SQL para obtener el ID de la submarca
-            using (SqlConnection connection = new SqlConnection("Data Source=CR7\\SQLEXPRESS;Initial Catalog=2231122109;User ID=sa;Password=aaa"))
-            {
-                connection.Open();
-
-                string query = "SELECT cve_localidad FROM Localidades WHERE localidad = @nombreLocalidad AND cve_estado = @idEstado AND cve_municipio = @idMunicipio";
-                using (SqlCommand command = new SqlCommand(query, connection))
-                {
-                    command.Parameters.AddWithValue("@nombreLocalidad", nombreLocalidad);
-                    command.Parameters.AddWithValue("@idEstado", idEstado);
-                    command.Parameters.AddWithValue("@idMunicipio", idMunicipio);
-
-                    object result = command.ExecuteScalar();
-                    if (result != null)
-                    {
-                        // Si se encuentra un resultado, conviértelo a entero
-                        idLocalidad = Convert.ToInt32(result);
-                    }
-                }
-            }
-
-            return idLocalidad;
+            GVDuenos.DataBind();
         }
 
         protected void GVVehiculos_SelectedIndexChanged(object sender, EventArgs e)
         {
-            txtNumSerie.Text =WS.Desencriptar(GVVehiculos.SelectedRow.Cells[1].Text.ToString());
-            txtPlaca.Text = GVVehiculos.SelectedRow.Cells[2].Text.ToString();
+
+            txtPlaca.Text = GVVehiculos.SelectedRow.Cells[1].Text.ToString();
+            txtNumSerie.Text =WS.Desencriptar(GVVehiculos.SelectedRow.Cells[2].Text.ToString());
             txtNumMotor.Text = WS.Desencriptar(GVVehiculos.SelectedRow.Cells[3].Text.ToString());
-            ddMarca.SelectedValue = ObtenerIdMarcaPorNombre(GVVehiculos.SelectedRow.Cells[4].Text.ToString()).ToString();
-            int marca = ObtenerIdMarcaPorNombre(GVVehiculos.SelectedRow.Cells[4].Text.ToString());
-            ddSubMarca.DataBind();//poner el dataBind es lo que hace que aparesca la submarca porque las actualiza a las de la marca
-            ddSubMarca.SelectedValue = ObtenerIdSubMarcaPorNombre(GVVehiculos.SelectedRow.Cells[5].Text.ToString(), ObtenerIdMarcaPorNombre(GVVehiculos.SelectedRow.Cells[4].Text.ToString())).ToString();
-            ddModelo.SelectedValue = ObtenerIdModeloPorNombre(GVVehiculos.SelectedRow.Cells[6].Text.ToString()).ToString();
-            ddColor.SelectedValue = ObtenerIdColorPorNombre(GVVehiculos.SelectedRow.Cells[7].Text.ToString()).ToString();
-            ddCombustible.SelectedValue = ObtenerIdCombustiblePorNombre(GVVehiculos.SelectedRow.Cells[8].Text.ToString()).ToString();
-
-            txtPlaca.Text = GVVehiculos.SelectedRow.Cells[9].Text.ToString();
-            //tengo que hacer una consulta por cada campo porque me da el nombre 
-           
-            /*
-            ddMunicipios.ClearSelection();
-            ListItem municipioItem = ddMunicipios.Items.FindByText(GVVehiculos.SelectedRow.Cells[10].Text.ToString());
-            if (municipioItem != null)
-            {
-                municipioItem.Selected = true;
-            }
-
-            ddLocalidades.ClearSelection();
-            ListItem localidadItem = ddLocalidades.Items.FindByText(GVVehiculos.SelectedRow.Cells[11].Text.ToString());
-            if (localidadItem != null)
-            {
-                localidadItem.Selected = true;
-            }
-            */
-
-
-            txtMatricula.Text= GVVehiculos.SelectedRow.Cells[12].Text.ToString();
-            //aqui va la latitud y longitud de donde se regristró
+            
+            //txtNumSerie.Text= GVVehiculos.SelectedRow.Cells[15].Text.ToString();
+            
+            ddMarca.SelectedValue = GVVehiculos.SelectedRow.Cells[15].Text.ToString();
+            ddSubMarca.DataBind();
+            ddSubMarca.SelectedValue = GVVehiculos.SelectedRow.Cells[16].Text.ToString();
+            
+            ddModelo.SelectedValue = GVVehiculos.SelectedRow.Cells[17].Text.ToString();
+            ddColor.SelectedValue = GVVehiculos.SelectedRow.Cells[18].Text.ToString();
+            ddCombustible.SelectedValue = GVVehiculos.SelectedRow.Cells[19].Text.ToString();
+            ddEstados.SelectedValue = GVVehiculos.SelectedRow.Cells[20].Text.ToString();
+            ddMunicipios.DataBind();
+            ddMunicipios.SelectedValue = GVVehiculos.SelectedRow.Cells[21].Text.ToString();
+            ddLocalidades.DataBind();
+            ddLocalidades.SelectedValue = GVVehiculos.SelectedRow.Cells[22].Text.ToString();
+            txtMatricula.Text = WS.Desencriptar(GVVehiculos.SelectedRow.Cells[12].Text.ToString());
             GoogleMaps1.Latitude = double.Parse(GVVehiculos.SelectedRow.Cells[13].Text.ToString());
             GoogleMaps1.Longitude = double.Parse(GVVehiculos.SelectedRow.Cells[14].Text.ToString());
-            
         }
 
         protected void ddLocalidades_SelectedIndexChanged(object sender, EventArgs e)
@@ -341,9 +128,134 @@ namespace Act11.RegistroVehicular
                 RBDuenoAnterior.Checked = true;
                 RBDuenoActual.Checked = false; // Desmarcar el otro RadioButton
             }
+            //GVDuenos.DataBind();
+        }
+
+        protected void btnModificar_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        protected void bntEliminar_Click(object sender, EventArgs e)
+        {
+            string connectionString = "Data Source=CR7\\SQLEXPRESS;Initial Catalog=2231122109;User ID=sa;Password=aaa";
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+
+                using (SqlCommand command = new SqlCommand("BorrarDatosVehiculoDuenos", connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    // Agregar parámetros si es necesario
+                    command.Parameters.AddWithValue("@NumSerie",WS.Encriptar(txtNumSerie.Text));//cambiar a varchar encriptar
+                    
+                    command.ExecuteNonQuery();
+                }
+            }
+
+            //Console.WriteLine("Procedimiento almacenado ejecutado con éxito.");
+            //Console.ReadLine();
+            GVVehiculos.DataBind();
+            GVDuenos.DataBind();
+
+        }
+
+        protected void DLInfoDueno_ItemDataBound(object sender, DataListItemEventArgs e)
+        {
+            if (e.Item.ItemType == ListItemType.Item || e.Item.ItemType == ListItemType.AlternatingItem)
+            {
+                // Obtener los datos encriptados del DataList
+                string matriculaEncriptada = DataBinder.Eval(e.Item.DataItem, "matricula").ToString();
+                string nombre = GVDuenos.SelectedRow.Cells[2].Text.ToString();
+                string paterno = GVDuenos.SelectedRow.Cells[3].Text.ToString();
+                string materno = GVDuenos.SelectedRow.Cells[4].Text.ToString();
+
+                nombre = WS.Desencriptar(nombre);
+                paterno = WS.Desencriptar(paterno);
+                materno = WS.Desencriptar(materno);
+
+                string curpEncriptado = DataBinder.Eval(e.Item.DataItem, "curp").ToString();
+                string rfcEncriptado = DataBinder.Eval(e.Item.DataItem, "rfc").ToString();
+                string sexoEncriptado = DataBinder.Eval(e.Item.DataItem, "sexo").ToString();
+
+
+                // y así sucesivamente para cada columna encriptada
+
+                // Desencriptar los datos
+                string matriculaDesencriptada = WS.Desencriptar(matriculaEncriptada); // Llama a tu método de desencriptación
+                string curpDesencriptado = WS.Desencriptar(curpEncriptado);
+                string rfcDesencriptado = WS.Desencriptar(rfcEncriptado);
+                string sexoDesencriptado = WS.Desencriptar(sexoEncriptado);
+
+                // y así sucesivamente para cada valor encriptado
+
+                // Actualizar los controles dentro del DataList con los datos desencriptados
+                ((Label)e.Item.FindControl("matriculaLabel")).Text = matriculaDesencriptada;
+                ((Label)e.Item.FindControl("nombre_completoLabel")).Text = nombre + " " + paterno + " " + materno;
+                ((Label)e.Item.FindControl("curpLabel")).Text = curpDesencriptado;
+                ((Label)e.Item.FindControl("rfcLabel")).Text = rfcDesencriptado;
+                ((Label)e.Item.FindControl("sexoLabel")).Text = sexoDesencriptado;
+
+                // y así sucesivamente para cada control dentro del DataList
+            }
+        }
+
+        protected void btnBuscar_Click(object sender, EventArgs e)
+        {
+            string placaABuscar = txtPlaca.Text.Trim(); // Obtener la placa ingresada por el usuario
+
+            // Construir la consulta SQL para buscar el registro específico
+            string query = "SELECT Vehiculos.placa, Vehiculos.numSerie, Vehiculos.numMotor, Marcas.marca, SubMarcas.submarca, Modelos.modelo, Colores.colores, Combustibles.combustible, Estados.estado, Municipios.municipio, Localidades.localidad, Vehiculos.matricula, Localidades.latitud, Localidades.longitud, Marcas.cveMarca, SubMarcas.cveSubmarca, Modelos.cveModelo, Colores.cveColor, Combustibles.cveCombustible, Estados.cve_estado, Municipios.cve_municipio, Localidades.cve_localidad FROM Vehiculos INNER JOIN Marcas ON Vehiculos.cveMarca = Marcas.cveMarca INNER JOIN SubMarcas ON Vehiculos.cveSubmarca = SubMarcas.cveSubmarca INNER JOIN Modelos ON Vehiculos.cveModelo = Modelos.cveModelo INNER JOIN Colores ON Vehiculos.cveColor = Colores.cveColor INNER JOIN Combustibles ON Vehiculos.cveCombustible = Combustibles.cveCombustible INNER JOIN Estados ON Vehiculos.cve_estado = Estados.cve_estado INNER JOIN Municipios ON Estados.cve_estado = Municipios.cve_estado AND Vehiculos.cve_municipio = Municipios.cve_municipio INNER JOIN Localidades ON Estados.cve_estado = Localidades.cve_estado AND Vehiculos.cve_localidad = Localidades.cve_localidad AND Municipios.cve_municipio = Localidades.cve_municipio WHERE Vehiculos.placa = @placa";
+
+            // Establecer el parámetro de la placa en la consulta SQL
+            SqlDataSourceVehiculos.SelectCommand = query;
+            SqlDataSourceVehiculos.SelectParameters.Clear();
+            SqlDataSourceVehiculos.SelectParameters.Add("placa", placaABuscar);
+
+            // Actualizar el GridView con el resultado de la consulta
+            GVVehiculos.DataBind();
+
+            GVVehiculos.SelectedIndex = 0;
+            MostrarPropietarioActual();
+            string numSerie = GVVehiculos.SelectedRow.Cells[2].Text.Trim();
+        }
+
+
+        protected void MostrarPropietarioActual()
+        {
+            string numSerie = GVVehiculos.SelectedRow.Cells[2].Text.Trim();
+
+            // Construir la consulta SQL para buscar los dueños del vehículo con el número de serie especificado
+            string query = @"SELECT dbo.Usuarios.matricula, dbo.Usuarios.nombre, dbo.Usuarios.paterno, dbo.Usuarios.materno, dbo.Usuarios.curp, dbo.Usuarios.rfc, dbo.Usuarios.sexo, dbo.Estados.estado, dbo.Municipios.municipio, dbo.Localidades.localidad, dbo.Localidades.latitud, dbo.Localidades.longitud, dbo.StatusDuenos.status
+                    FROM dbo.Vehiculos
+                    INNER JOIN dbo.Usuarios ON dbo.Vehiculos.matricula = dbo.Usuarios.matricula
+                    INNER JOIN dbo.Duenos ON dbo.Usuarios.matricula = dbo.Duenos.matricula
+                    INNER JOIN dbo.StatusDuenos ON dbo.Duenos.IdStatusDuenos = dbo.StatusDuenos.IdStatusDuenos
+                    WHERE dbo.Vehiculos.numSerie = @numSerie AND dbo.Duenos.IdStatusDuenos = '1'";
+
+            // Establecer el parámetro del número de serie en la consulta SQL
+            SqlDataSourceDuenos.SelectCommand = query;
+            SqlDataSourceDuenos.SelectParameters.Clear();
+            SqlDataSourceDuenos.SelectParameters.Add("numSerie", numSerie);
+
+            // Actualizar el GridView con el resultado de la consulta
             GVDuenos.DataBind();
         }
 
-      
+
+
+
+        protected void btnLimpiar_Click(object sender, EventArgs e)
+        {
+            GVVehiculos.DataBind();
+            //GVDuenos.DataBind();
+        }
+
+
+
+
+
     }
 }
