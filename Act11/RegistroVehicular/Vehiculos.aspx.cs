@@ -112,7 +112,7 @@ namespace Act11.RegistroVehicular
 
         protected void GVDuenos_SelectedIndexChanged(object sender, EventArgs e)
         {
-            
+            DLInfoDueno.Visible = true;
             GoogleMaps1.Latitude = double.Parse(GVDuenos.SelectedRow.Cells[11].Text.ToString());
             GoogleMaps1.Longitude = double.Parse(GVDuenos.SelectedRow.Cells[12].Text.ToString());
             //status dueno actual?
@@ -228,12 +228,17 @@ namespace Act11.RegistroVehicular
             string numSerie = GVVehiculos.SelectedRow.Cells[2].Text.Trim();
 
             // Construir la consulta SQL para buscar los dueños del vehículo con el número de serie especificado
-            string query = @"SELECT dbo.Usuarios.matricula, dbo.Usuarios.nombre, dbo.Usuarios.paterno, dbo.Usuarios.materno, dbo.Usuarios.curp, dbo.Usuarios.rfc, dbo.Usuarios.sexo, dbo.Estados.estado, dbo.Municipios.municipio, dbo.Localidades.localidad, dbo.Localidades.latitud, dbo.Localidades.longitud, dbo.StatusDuenos.status
-                    FROM dbo.Vehiculos
-                    INNER JOIN dbo.Usuarios ON dbo.Vehiculos.matricula = dbo.Usuarios.matricula
-                    INNER JOIN dbo.Duenos ON dbo.Usuarios.matricula = dbo.Duenos.matricula
-                    INNER JOIN dbo.StatusDuenos ON dbo.Duenos.IdStatusDuenos = dbo.StatusDuenos.IdStatusDuenos
-                    WHERE dbo.Vehiculos.numSerie = @numSerie AND dbo.Duenos.IdStatusDuenos = '1'";
+            string query = @"SELECT dbo.Usuarios.matricula, dbo.Usuarios.nombre, dbo.Usuarios.paterno, dbo.Usuarios.materno, dbo.Usuarios.curp, dbo.Usuarios.rfc, dbo.Usuarios.sexo, dbo.Estados.estado, dbo.Municipios.municipio, dbo.Localidades.localidad, dbo.Localidades.latitud, dbo.Localidades.longitud, 
+             dbo.StatusDuenos.status, dbo.Vehiculos.numSerie, dbo.Estados.cve_estado, dbo.Municipios.cve_municipio, dbo.Localidades.cve_localidad
+             FROM   dbo.Vehiculos INNER JOIN
+             dbo.Usuarios ON dbo.Vehiculos.matricula = dbo.Usuarios.matricula INNER JOIN
+             dbo.Estados ON dbo.Vehiculos.cve_estado = dbo.Estados.cve_estado INNER JOIN
+             dbo.Municipios ON dbo.Estados.cve_estado = dbo.Municipios.cve_estado AND dbo.Usuarios.cve_municipio = dbo.Municipios.cve_municipio INNER JOIN
+             dbo.Localidades ON dbo.Estados.cve_estado = dbo.Localidades.cve_estado AND dbo.Usuarios.cve_localidad = dbo.Localidades.cve_localidad AND dbo.Municipios.cve_municipio = dbo.Localidades.cve_municipio INNER JOIN
+             dbo.Duenos ON dbo.Usuarios.matricula = dbo.Duenos.matricula INNER JOIN
+             dbo.StatusDuenos ON dbo.Duenos.IdStatusDuenos = dbo.StatusDuenos.IdStatusDuenos
+
+             where dbo.Vehiculos.numSerie = @numSerie and dbo.Duenos.IdStatusDuenos = 1";
 
             // Establecer el parámetro del número de serie en la consulta SQL
             SqlDataSourceDuenos.SelectCommand = query;
@@ -249,8 +254,9 @@ namespace Act11.RegistroVehicular
 
         protected void btnLimpiar_Click(object sender, EventArgs e)
         {
+            DLInfoDueno.Visible= false;
             GVVehiculos.DataBind();
-            //GVDuenos.DataBind();
+            GVDuenos.DataBind();
         }
 
 
