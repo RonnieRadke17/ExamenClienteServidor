@@ -78,9 +78,7 @@ namespace Act11.RegistroVehicular
             txtPlaca.Text = GVVehiculos.SelectedRow.Cells[1].Text.ToString();
             txtNumSerie.Text =WS.Desencriptar(GVVehiculos.SelectedRow.Cells[2].Text.ToString());
             txtNumMotor.Text = WS.Desencriptar(GVVehiculos.SelectedRow.Cells[3].Text.ToString());
-            
-            //txtNumSerie.Text= GVVehiculos.SelectedRow.Cells[15].Text.ToString();
-            
+
             ddMarca.SelectedValue = GVVehiculos.SelectedRow.Cells[15].Text.ToString();
             ddSubMarca.DataBind();
             ddSubMarca.SelectedValue = GVVehiculos.SelectedRow.Cells[16].Text.ToString();
@@ -96,6 +94,44 @@ namespace Act11.RegistroVehicular
             txtMatricula.Text = WS.Desencriptar(GVVehiculos.SelectedRow.Cells[12].Text.ToString());
             GoogleMaps1.Latitude = double.Parse(GVVehiculos.SelectedRow.Cells[13].Text.ToString());
             GoogleMaps1.Longitude = double.Parse(GVVehiculos.SelectedRow.Cells[14].Text.ToString());
+
+            //mostrar los registros con el mismo numSerie y mostrar los dueños del coche
+            //mostrar todos los vehiculos con numSerie
+            string numSerie = GVVehiculos.SelectedRow.Cells[2].Text.ToString(); // revisar si se descencripta o no
+
+            // Construir la consulta SQL para buscar el registro específico
+            string query = "SELECT Vehiculos.placa, Vehiculos.numSerie, Vehiculos.numMotor, Marcas.marca, SubMarcas.submarca, Modelos.modelo, Colores.colores, Combustibles.combustible, Estados.estado, Municipios.municipio, Localidades.localidad, Vehiculos.matricula, Localidades.latitud, Localidades.longitud, Marcas.cveMarca, SubMarcas.cveSubmarca, Modelos.cveModelo, Colores.cveColor, Combustibles.cveCombustible, Estados.cve_estado, Municipios.cve_municipio, Localidades.cve_localidad FROM Vehiculos INNER JOIN Marcas ON Vehiculos.cveMarca = Marcas.cveMarca INNER JOIN SubMarcas ON Vehiculos.cveSubmarca = SubMarcas.cveSubmarca INNER JOIN Modelos ON Vehiculos.cveModelo = Modelos.cveModelo INNER JOIN Colores ON Vehiculos.cveColor = Colores.cveColor INNER JOIN Combustibles ON Vehiculos.cveCombustible = Combustibles.cveCombustible INNER JOIN Estados ON Vehiculos.cve_estado = Estados.cve_estado INNER JOIN Municipios ON Estados.cve_estado = Municipios.cve_estado AND Vehiculos.cve_municipio = Municipios.cve_municipio INNER JOIN Localidades ON Estados.cve_estado = Localidades.cve_estado AND Vehiculos.cve_localidad = Localidades.cve_localidad AND Municipios.cve_municipio = Localidades.cve_municipio WHERE Vehiculos.numSerie = @numSerie";
+
+            // Establecer el parámetro de la placa en la consulta SQL
+            SqlDataSourceVehiculos.SelectCommand = query;
+            SqlDataSourceVehiculos.SelectParameters.Clear();
+            SqlDataSourceVehiculos.SelectParameters.Add("numSerie",numSerie);
+
+            // Actualizar el GridView con el resultado de la consulta
+            GVVehiculos.DataBind();
+
+            //mostrar todos los dueños de x vehiculo por el numSerie
+            // Construir la consulta SQL para buscar el registro específico
+            string query1 = @"SELECT DISTINCT dbo.Usuarios.matricula, dbo.Usuarios.nombre, dbo.Usuarios.paterno, dbo.Usuarios.materno, dbo.Usuarios.curp, dbo.Usuarios.rfc, dbo.Usuarios.sexo, dbo.Estados.estado, dbo.Municipios.municipio, dbo.Localidades.localidad, dbo.Localidades.latitud, dbo.Localidades.longitud, 
+             dbo.StatusDuenos.status, dbo.Vehiculos.numSerie, dbo.Estados.cve_estado, dbo.Municipios.cve_municipio, dbo.Localidades.cve_localidad
+FROM   dbo.Vehiculos INNER JOIN
+             dbo.Usuarios ON dbo.Vehiculos.matricula = dbo.Usuarios.matricula INNER JOIN
+             dbo.Estados ON dbo.Vehiculos.cve_estado = dbo.Estados.cve_estado INNER JOIN
+             dbo.Municipios ON dbo.Estados.cve_estado = dbo.Municipios.cve_estado AND dbo.Usuarios.cve_municipio = dbo.Municipios.cve_municipio INNER JOIN
+             dbo.Localidades ON dbo.Estados.cve_estado = dbo.Localidades.cve_estado AND dbo.Usuarios.cve_localidad = dbo.Localidades.cve_localidad AND dbo.Municipios.cve_municipio = dbo.Localidades.cve_municipio INNER JOIN
+             dbo.Duenos ON dbo.Usuarios.matricula = dbo.Duenos.matricula INNER JOIN
+             dbo.StatusDuenos ON dbo.Duenos.IdStatusDuenos = dbo.StatusDuenos.IdStatusDuenos
+WHERE (dbo.Vehiculos.numSerie = @numSerie)";
+
+            // Establecer el parámetro de la placa en la consulta SQL
+            SqlDataSourceDuenos.SelectCommand = query1;
+            SqlDataSourceDuenos.SelectParameters.Clear();
+            SqlDataSourceDuenos.SelectParameters.Add("numSerie", numSerie);
+
+            // Actualizar el GridView con el resultado de la consulta
+            GVDuenos.DataBind();
+
+
         }
 
         protected void ddLocalidades_SelectedIndexChanged(object sender, EventArgs e)
@@ -129,12 +165,110 @@ namespace Act11.RegistroVehicular
                 RBDuenoAnterior.Checked = true;
                 RBDuenoActual.Checked = false; // Desmarcar el otro RadioButton
             }
-            //GVDuenos.DataBind();
+
+            //GVDuenos.DataBind(); 
+            // tenemos que poner en el gridWiew de vehiculos los coches que posee actualmente y mostrar solo ese dueño
+            string matriculaABuscar = GVDuenos.SelectedRow.Cells[1].Text.ToString(); // revisar si se descencripta o no
+            //matriculaABuscar = WS.Encriptar(matriculaABuscar);
+
+            // Construir la consulta SQL para buscar el registro específico
+            string query = @"SELECT dbo.Vehiculos.placa, dbo.Vehiculos.numSerie, dbo.Vehiculos.numMotor, dbo.Marcas.marca, dbo.SubMarcas.submarca, dbo.Modelos.modelo, dbo.Colores.colores, dbo.Combustibles.combustible, dbo.Estados.estado, dbo.Municipios.municipio, dbo.Localidades.localidad, 
+             dbo.Vehiculos.matricula, dbo.Localidades.latitud, dbo.Localidades.longitud, dbo.Marcas.cveMarca, dbo.SubMarcas.cveSubmarca, dbo.Modelos.cveModelo, dbo.Colores.cveColor, dbo.Combustibles.cveCombustible, dbo.Estados.cve_estado, dbo.Municipios.cve_municipio, 
+             dbo.Localidades.cve_localidad
+FROM   dbo.Vehiculos INNER JOIN
+             dbo.Marcas ON dbo.Vehiculos.cveMarca = dbo.Marcas.cveMarca INNER JOIN
+             dbo.SubMarcas ON dbo.Vehiculos.cveSubmarca = dbo.SubMarcas.cveSubmarca INNER JOIN
+             dbo.Modelos ON dbo.Vehiculos.cveModelo = dbo.Modelos.cveModelo INNER JOIN
+             dbo.Colores ON dbo.Vehiculos.cveColor = dbo.Colores.cveColor INNER JOIN
+             dbo.Combustibles ON dbo.Vehiculos.cveCombustible = dbo.Combustibles.cveCombustible INNER JOIN
+             dbo.Estados ON dbo.Vehiculos.cve_estado = dbo.Estados.cve_estado INNER JOIN
+             dbo.Municipios ON dbo.Estados.cve_estado = dbo.Municipios.cve_estado AND dbo.Vehiculos.cve_municipio = dbo.Municipios.cve_municipio INNER JOIN
+             dbo.Localidades ON dbo.Estados.cve_estado = dbo.Localidades.cve_estado AND dbo.Vehiculos.cve_localidad = dbo.Localidades.cve_localidad AND dbo.Municipios.cve_municipio = dbo.Localidades.cve_municipio INNER JOIN
+             dbo.Duenos ON dbo.Vehiculos.numSerie = dbo.Duenos.numSerie INNER JOIN
+             dbo.StatusDuenos ON dbo.Duenos.IdStatusDuenos = dbo.StatusDuenos.IdStatusDuenos
+WHERE(dbo.Vehiculos.matricula = @matricula) AND(dbo.Duenos.IdStatusDuenos = 1)";
+
+            // Establecer el parámetro de la placa en la consulta SQL
+            SqlDataSourceVehiculos.SelectCommand = query;
+            SqlDataSourceVehiculos.SelectParameters.Clear();
+            SqlDataSourceVehiculos.SelectParameters.Add("matricula", matriculaABuscar);
+
+            // Actualizar el GridView con el resultado de la consulta
+            GVVehiculos.DataBind();
+
+            //falta mostrar solo el dueño seleccionado al parecer cumple su función bien
+            int selectedIndex = GVDuenos.SelectedIndex;
+
+            // Iterar sobre cada fila del GridView
+            for (int i = 0; i < GVDuenos.Rows.Count; i++)
+            {
+                // Verificar si es la fila seleccionada
+                if (i == selectedIndex)
+                {
+                    // Mostrar la fila seleccionada
+                    GVDuenos.Rows[i].Visible = true;
+                }
+                else
+                {
+                    // Ocultar las filas que no están seleccionadas
+                    GVDuenos.Rows[i].Visible = false;
+                }
+            }
+
         }
 
         protected void btnModificar_Click(object sender, EventArgs e)
         {
-            //modifica todos los valores de el registro hasta la placa
+            //modifica todos los valores de el registro pero la placa no porque es la pk
+            //aqui va el procedimiento almacenado, tiene que encriptar la matricula y numserie y motor
+            string connectionString = "Data Source=CR7\\SQLEXPRESS;Initial Catalog=2231122109;User ID=sa;Password=aaa";
+
+            //SqlConnection conexion = new SqlConnection("Data Source=CR7\\SQLEXPRESS;Initial Catalog=2231122109;User ID=sa;Password=aaa");
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+
+                using (SqlCommand command = new SqlCommand("ActualizarDatosVehiculoDuenos", connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    // Agregar parámetros si es necesario
+                    command.Parameters.AddWithValue("@Placa", txtPlaca.Text);
+                    command.Parameters.AddWithValue("@NumSerie", WS.Encriptar(txtNumSerie.Text));//cambiar a varchar encriptar
+                    command.Parameters.AddWithValue("@NumMotor", WS.Encriptar(txtNumMotor.Text));//varchar encriptar
+                    command.Parameters.AddWithValue("@CveMarca", int.Parse(ddMarca.SelectedValue.ToString()));//entero
+                    command.Parameters.AddWithValue("@CveSubmarca", int.Parse(ddSubMarca.SelectedValue.ToString()));//entero
+                    command.Parameters.AddWithValue("@CveModelo", int.Parse(ddModelo.SelectedValue.ToString()));//entero
+                    command.Parameters.AddWithValue("@CveColor", int.Parse(ddColor.SelectedValue.ToString()));//entero
+                    command.Parameters.AddWithValue("@CveCombustible", int.Parse(ddCombustible.SelectedValue.ToString()));//entero
+                    command.Parameters.AddWithValue("@CveEstado", int.Parse(ddEstados.SelectedValue.ToString()));//entero
+                    command.Parameters.AddWithValue("@CveMunicipio", int.Parse(ddMunicipios.SelectedValue.ToString()));//entero
+                    command.Parameters.AddWithValue("@CveLocalidad", int.Parse(ddLocalidades.SelectedValue.ToString()));//entero
+                    command.Parameters.AddWithValue("@Matricula", WS.Encriptar(txtMatricula.Text));//String aqui se tiene que encriptar
+
+                    if (RBDuenoActual.Checked)
+                    {
+                        command.Parameters.AddWithValue("@IdStatusDuenos", 1);//entero
+
+                    }
+                    if (RBDuenoAnterior.Checked)
+                    {
+                        command.Parameters.AddWithValue("@IdStatusDuenos", 2);//entero
+
+                    }
+                    /* @Placa NVARCHAR(50),@NumSerie INT,@NumMotor INT,@CveMarca INT,@CveSubmarca INT,@CveModelo INT,@CveColor INT,
+                    @CveCombustible INT,@CveEstado INT,@CveMunicipio INT,@CveLocalidad INT,@Matricula NVARCHAR(50),@IdStatusDuenos INT
+                     */
+                    // Ejecutar el procedimiento almacenado
+                    command.ExecuteNonQuery();
+                }
+            }
+
+            //Console.WriteLine("Procedimiento almacenado ejecutado con éxito.");
+            //Console.ReadLine();
+            GVVehiculos.DataBind();
+            GVDuenos.DataBind();
         }
 
         protected void bntEliminar_Click(object sender, EventArgs e)
@@ -261,8 +395,7 @@ namespace Act11.RegistroVehicular
         {
             string matriculaABuscar = txtMatricula.Text.Trim(); // revisar si se descencripta o no
             matriculaABuscar = WS.Encriptar(matriculaABuscar);
-            //string placaABuscar = txtPlaca.Text.Trim(); // Obtener la placa ingresada por el usuario
-
+         
             // Construir la consulta SQL para buscar el registro específico
             string query = @"SELECT dbo.Vehiculos.placa, dbo.Vehiculos.numSerie, dbo.Vehiculos.numMotor, dbo.Marcas.marca, dbo.SubMarcas.submarca, dbo.Modelos.modelo, dbo.Colores.colores, dbo.Combustibles.combustible, dbo.Estados.estado, dbo.Municipios.municipio, dbo.Localidades.localidad, 
              dbo.Vehiculos.matricula, dbo.Localidades.latitud, dbo.Localidades.longitud, dbo.Marcas.cveMarca, dbo.SubMarcas.cveSubmarca, dbo.Modelos.cveModelo, dbo.Colores.cveColor, dbo.Combustibles.cveCombustible, dbo.Estados.cve_estado, dbo.Municipios.cve_municipio, 
