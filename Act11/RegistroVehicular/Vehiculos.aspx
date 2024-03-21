@@ -34,12 +34,12 @@
     <asp:TextBox ID="txtNumSerie" runat="server" placeholder="Número de serie"></asp:TextBox>
     <asp:TextBox ID="txtNumMotor" runat="server" placeholder="Número de motor"></asp:TextBox>
     <br>
-    <asp:DropDownList ID="ddEstados" runat="server" DataSourceID="SqlDataSourceEstados" DataTextField="estado" DataValueField="cve_estado" AutoPostBack="True"></asp:DropDownList>
+    <asp:DropDownList ID="ddEstados" runat="server" DataSourceID="SqlDataSourceEstados" DataTextField="estado" DataValueField="cve_estado" AutoPostBack="True" OnSelectedIndexChanged="ddEstados_SelectedIndexChanged"></asp:DropDownList>
 
     <asp:SqlDataSource runat="server" ID="SqlDataSourceEstados" ConnectionString='<%$ ConnectionStrings:DefaultConnection %>' SelectCommand="SELECT cve_estado, estado FROM Estados"></asp:SqlDataSource>
     
     
-    <asp:DropDownList ID="ddMunicipios" runat="server" DataSourceID="SqlDataSourceMunicipios" DataTextField="municipio" DataValueField="cve_municipio" AutoPostBack="True"></asp:DropDownList>
+    <asp:DropDownList ID="ddMunicipios" runat="server" DataSourceID="SqlDataSourceMunicipios" DataTextField="municipio" DataValueField="cve_municipio" AutoPostBack="True" OnSelectedIndexChanged="ddMunicipios_SelectedIndexChanged"></asp:DropDownList>
     <asp:SqlDataSource runat="server" ID="SqlDataSourceMunicipios" ConnectionString='<%$ ConnectionStrings:DefaultConnection %>' SelectCommand="SELECT cve_municipio, municipio FROM Municipios WHERE (cve_estado = @cve_estado) ORDER BY municipio">
         <SelectParameters>
             <asp:ControlParameter ControlID="ddEstados" PropertyName="SelectedValue" Name="cve_estado"></asp:ControlParameter>
@@ -106,7 +106,7 @@
     
     <!---GVVehiculos GVDueños---->
     <asp:Label ID="Label2" runat="server" Text="GRIDVIEW vehiculos:"></asp:Label>
-    <asp:GridView ID="GVVehiculos" runat="server" AutoGenerateColumns="False" DataKeyNames="placa,cveMarca,cveSubmarca,cveModelo,cveCombustible,cve_estado,numSerie" DataSourceID="SqlDataSourceVehiculos" CellPadding="4" ForeColor="#333333" GridLines="None" OnSelectedIndexChanged="GVVehiculos_SelectedIndexChanged">
+    <asp:GridView ID="GVVehiculos" runat="server" AutoGenerateColumns="False" DataKeyNames="placa,cveMarca,cveSubmarca,cveModelo,cveCombustible,cve_estado,numSerie" DataSourceID="SqlDataSourceVehiculos" CellPadding="4" ForeColor="#333333" GridLines="None" OnSelectedIndexChanged="GVVehiculos_SelectedIndexChanged" OnRowDataBound="GVVehiculos_RowDataBound">
         <AlternatingRowStyle BackColor="White" ForeColor="#284775"></AlternatingRowStyle>
         <Columns>
             <asp:CommandField ShowSelectButton="True" ButtonType="Button"></asp:CommandField>

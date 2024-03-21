@@ -16,7 +16,10 @@ namespace Act11.RegistroVehicular
         protected void Page_Load(object sender, EventArgs e)
         {
             Response.ContentEncoding = System.Text.Encoding.UTF8;
-           
+            if (!IsPostBack)
+            {
+                GVVehiculos.RowDataBound += GVVehiculos_RowDataBound;
+            }
         }
 
         protected void btnRegistrar_Click(object sender, EventArgs e)
@@ -76,8 +79,13 @@ namespace Act11.RegistroVehicular
         {
 
             txtPlaca.Text = GVVehiculos.SelectedRow.Cells[1].Text.ToString();
-            txtNumSerie.Text =WS.Desencriptar(GVVehiculos.SelectedRow.Cells[2].Text.ToString());
-            txtNumMotor.Text = WS.Desencriptar(GVVehiculos.SelectedRow.Cells[3].Text.ToString());
+            txtNumSerie.Text =GVVehiculos.SelectedRow.Cells[2].Text.ToString();
+            txtNumMotor.Text =GVVehiculos.SelectedRow.Cells[3].Text.ToString();
+
+
+            // se descenciptó cuando se muestra por eso aqui no se nescesita
+            //txtNumSerie.Text =WS.Desencriptar(GVVehiculos.SelectedRow.Cells[2].Text.ToString());
+            //txtNumMotor.Text = WS.Desencriptar(GVVehiculos.SelectedRow.Cells[3].Text.ToString());
 
             ddMarca.SelectedValue = GVVehiculos.SelectedRow.Cells[15].Text.ToString();
             ddSubMarca.DataBind();
@@ -97,7 +105,7 @@ namespace Act11.RegistroVehicular
 
             //mostrar los registros con el mismo numSerie y mostrar los dueños del coche
             //mostrar todos los vehiculos con numSerie
-            string numSerie = GVVehiculos.SelectedRow.Cells[2].Text.ToString(); // revisar si se descencripta o no
+            string numSerie = WS.Encriptar(GVVehiculos.SelectedRow.Cells[2].Text.ToString()); // revisar si se descencripta o no
 
             // Construir la consulta SQL para buscar el registro específico
             string query = "SELECT Vehiculos.placa, Vehiculos.numSerie, Vehiculos.numMotor, Marcas.marca, SubMarcas.submarca, Modelos.modelo, Colores.colores, Combustibles.combustible, Estados.estado, Municipios.municipio, Localidades.localidad, Vehiculos.matricula, Localidades.latitud, Localidades.longitud, Marcas.cveMarca, SubMarcas.cveSubmarca, Modelos.cveModelo, Colores.cveColor, Combustibles.cveCombustible, Estados.cve_estado, Municipios.cve_municipio, Localidades.cve_localidad FROM Vehiculos INNER JOIN Marcas ON Vehiculos.cveMarca = Marcas.cveMarca INNER JOIN SubMarcas ON Vehiculos.cveSubmarca = SubMarcas.cveSubmarca INNER JOIN Modelos ON Vehiculos.cveModelo = Modelos.cveModelo INNER JOIN Colores ON Vehiculos.cveColor = Colores.cveColor INNER JOIN Combustibles ON Vehiculos.cveCombustible = Combustibles.cveCombustible INNER JOIN Estados ON Vehiculos.cve_estado = Estados.cve_estado INNER JOIN Municipios ON Estados.cve_estado = Municipios.cve_estado AND Vehiculos.cve_municipio = Municipios.cve_municipio INNER JOIN Localidades ON Estados.cve_estado = Localidades.cve_estado AND Vehiculos.cve_localidad = Localidades.cve_localidad AND Municipios.cve_municipio = Localidades.cve_municipio WHERE Vehiculos.numSerie = @numSerie";
@@ -134,16 +142,23 @@ WHERE (dbo.Vehiculos.numSerie = @numSerie)";
 
         }
 
-        protected void ddLocalidades_SelectedIndexChanged(object sender, EventArgs e)
+        protected void GVVehiculos_RowDataBound(object sender, GridViewRowEventArgs e)
         {
-            string latitud = ddLocalidades.SelectedItem.Attributes["latitud"];
-            string longitud = ddLocalidades.SelectedItem.Attributes["longitud"];
-            //Console.WriteLine(latitud);
-            /*
-            GoogleMaps1.Latitude = double.Parse(latitud);//están llegando vacios los parametros revisar porque
-            GoogleMaps1.Longitude = double.Parse(longitud);//si lo borro no olvidar el autopstback
-             */
-
+            if (e.Row.RowType == DataControlRowType.DataRow)
+            {
+                // Obtener los datos del registro 
+                string numSerie = DataBinder.Eval(e.Row.DataItem, "numSerie").ToString();
+                string numMotor = DataBinder.Eval(e.Row.DataItem, "numMotor").ToString();
+                // Descifrar los datos
+                //string decryptedPlaca = Decrypt(placa); // Asegúrate de tener el método Decrypt implementado
+                string decryptedNumSerie = WS.Desencriptar(numSerie); // Asegúrate de tener el método Decrypt implementado
+                string decryptedNumMotor = WS.Desencriptar(numMotor); // Asegúrate de tener el método Decrypt implementado
+                                                                      // Actualizar los datos en la fila actual del GridView
+                                                                      //e.Row.Cells[1].Text = decryptedPlaca;
+                e.Row.Cells[2].Text = decryptedNumSerie;
+                e.Row.Cells[3].Text = decryptedNumMotor;
+                // Repetir el proceso para otros campos que necesites descifrar
+            }
         }
 
         protected void GVDuenos_SelectedIndexChanged(object sender, EventArgs e)
@@ -354,15 +369,19 @@ WHERE(dbo.Vehiculos.matricula = @matricula) AND(dbo.Duenos.IdStatusDuenos = 1)";
 
             GVVehiculos.SelectedIndex = 0;
             MostrarPropietarioActual();
-            string numSerie = GVVehiculos.SelectedRow.Cells[2].Text.Trim();
+
+            //mostramos el mapa de el registro de la placa
+            GoogleMaps1.Latitude = double.Parse(GVVehiculos.SelectedRow.Cells[13].Text.ToString());
+            GoogleMaps1.Longitude = double.Parse(GVVehiculos.SelectedRow.Cells[14].Text.ToString());
+
         }
 
         protected void MostrarPropietarioActual()
         {
-            string numSerie = GVVehiculos.SelectedRow.Cells[2].Text.Trim();
+            string numSerie = WS.Encriptar(GVVehiculos.SelectedRow.Cells[2].Text.Trim());
 
             // Construir la consulta SQL para buscar los dueños del vehículo con el número de serie especificado
-            string query = @"SELECT dbo.Usuarios.matricula, dbo.Usuarios.nombre, dbo.Usuarios.paterno, dbo.Usuarios.materno, dbo.Usuarios.curp, dbo.Usuarios.rfc, dbo.Usuarios.sexo, dbo.Estados.estado, dbo.Municipios.municipio, dbo.Localidades.localidad, dbo.Localidades.latitud, dbo.Localidades.longitud, 
+            string query = @"SELECT DISTINCT dbo.Usuarios.matricula, dbo.Usuarios.nombre, dbo.Usuarios.paterno, dbo.Usuarios.materno, dbo.Usuarios.curp, dbo.Usuarios.rfc, dbo.Usuarios.sexo, dbo.Estados.estado, dbo.Municipios.municipio, dbo.Localidades.localidad, dbo.Localidades.latitud, dbo.Localidades.longitud, 
              dbo.StatusDuenos.status, dbo.Vehiculos.numSerie, dbo.Estados.cve_estado, dbo.Municipios.cve_municipio, dbo.Localidades.cve_localidad
              FROM   dbo.Vehiculos INNER JOIN
              dbo.Usuarios ON dbo.Vehiculos.matricula = dbo.Usuarios.matricula INNER JOIN
@@ -420,8 +439,31 @@ WHERE(dbo.Vehiculos.matricula = @matricula) AND(dbo.Duenos.IdStatusDuenos = 1)";
 
             // Actualizar el GridView con el resultado de la consulta
             GVVehiculos.DataBind();
+            //mostrar en GVDuenos a x matricula
+            string query1 = @"SELECT DISTINCT dbo.Usuarios.matricula, dbo.Usuarios.nombre, dbo.Usuarios.paterno, dbo.Usuarios.materno, dbo.Usuarios.curp, dbo.Usuarios.rfc, dbo.Usuarios.sexo, dbo.Estados.estado, dbo.Municipios.municipio, dbo.Localidades.localidad, dbo.Localidades.latitud, dbo.Localidades.longitud, 
+             dbo.StatusDuenos.status, dbo.Vehiculos.numSerie, dbo.Estados.cve_estado, dbo.Municipios.cve_municipio, dbo.Localidades.cve_localidad
+FROM   dbo.Vehiculos INNER JOIN
+             dbo.Usuarios ON dbo.Vehiculos.matricula = dbo.Usuarios.matricula INNER JOIN
+             dbo.Estados ON dbo.Vehiculos.cve_estado = dbo.Estados.cve_estado INNER JOIN
+             dbo.Municipios ON dbo.Estados.cve_estado = dbo.Municipios.cve_estado AND dbo.Usuarios.cve_municipio = dbo.Municipios.cve_municipio INNER JOIN
+             dbo.Localidades ON dbo.Estados.cve_estado = dbo.Localidades.cve_estado AND dbo.Usuarios.cve_localidad = dbo.Localidades.cve_localidad AND dbo.Municipios.cve_municipio = dbo.Localidades.cve_municipio INNER JOIN
+             dbo.Duenos ON dbo.Usuarios.matricula = dbo.Duenos.matricula INNER JOIN
+             dbo.StatusDuenos ON dbo.Duenos.IdStatusDuenos = dbo.StatusDuenos.IdStatusDuenos
+WHERE (dbo.Vehiculos.matricula = @matricula)";
+
+            // Establecer el parámetro de la placa en la consulta SQL
+            SqlDataSourceDuenos.SelectCommand = query1;
+            SqlDataSourceDuenos.SelectParameters.Clear();
+            SqlDataSourceDuenos.SelectParameters.Add("matricula", matriculaABuscar);
+
+            // Actualizar el GridView con el resultado de la consulta
+            GVDuenos.DataBind();
 
 
+            GVDuenos.SelectedIndex = 0;
+            //mostrar de donde es el de la matricula
+            GoogleMaps1.Longitude = double.Parse(GVDuenos.SelectedRow.Cells[12].Text.ToString());
+            GoogleMaps1.Latitude = double.Parse(GVDuenos.SelectedRow.Cells[11].Text.ToString());
 
         }
 
@@ -430,5 +472,79 @@ WHERE(dbo.Vehiculos.matricula = @matricula) AND(dbo.Duenos.IdStatusDuenos = 1)";
             GVVehiculos.DataBind();
             GVDuenos.DataBind();
         }
+
+        protected void ddEstados_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            // Obtener la latitud y longitud de la opción seleccionada en el DropDownList
+            string latitud = string.Empty;
+            string longitud = string.Empty;
+
+            // Obtener la fila seleccionada del SqlDataSourceLocalidades
+            DataView dvLocalidades = (DataView)SqlDataSourceLocalidades.Select(DataSourceSelectArguments.Empty);
+            if (dvLocalidades != null && dvLocalidades.Count > 0)
+            {
+                // Obtener la fila seleccionada del DataView
+                DataRowView filaSeleccionada = dvLocalidades[ddLocalidades.SelectedIndex];
+                // Obtener la latitud y longitud de la fila seleccionada
+                latitud = filaSeleccionada["latitud"].ToString();
+                longitud = filaSeleccionada["longitud"].ToString();
+            }//Console.WriteLine(latitud);
+
+            GoogleMaps1.Latitude = double.Parse(latitud);//están llegando vacios los parametros revisar porque
+            GoogleMaps1.Longitude = double.Parse(longitud);//si lo borro no olvidar el autopstback
+            GoogleMaps1.Zoom = 8;
+
+        }
+
+
+        protected void ddMunicipios_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            // Obtener la latitud y longitud de la opción seleccionada en el DropDownList
+            string latitud = string.Empty;
+            string longitud = string.Empty;
+
+            // Obtener la fila seleccionada del SqlDataSourceLocalidades
+            DataView dvLocalidades = (DataView)SqlDataSourceLocalidades.Select(DataSourceSelectArguments.Empty);
+            if (dvLocalidades != null && dvLocalidades.Count > 0)
+            {
+                // Obtener la fila seleccionada del DataView
+                DataRowView filaSeleccionada = dvLocalidades[ddLocalidades.SelectedIndex];
+                // Obtener la latitud y longitud de la fila seleccionada
+                latitud = filaSeleccionada["latitud"].ToString();
+                longitud = filaSeleccionada["longitud"].ToString();
+            }//Console.WriteLine(latitud);
+
+            GoogleMaps1.Latitude = double.Parse(latitud);//están llegando vacios los parametros revisar porque
+            GoogleMaps1.Longitude = double.Parse(longitud);//si lo borro no olvidar el autopstback
+            GoogleMaps1.Zoom = 12;
+
+        }
+
+
+
+        protected void ddLocalidades_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            // Obtener la latitud y longitud de la opción seleccionada en el DropDownList
+            string latitud = string.Empty;
+            string longitud = string.Empty;
+
+            // Obtener la fila seleccionada del SqlDataSourceLocalidades
+            DataView dvLocalidades = (DataView)SqlDataSourceLocalidades.Select(DataSourceSelectArguments.Empty);
+            if (dvLocalidades != null && dvLocalidades.Count > 0)
+            {
+                // Obtener la fila seleccionada del DataView
+                DataRowView filaSeleccionada = dvLocalidades[ddLocalidades.SelectedIndex];
+                // Obtener la latitud y longitud de la fila seleccionada
+                latitud = filaSeleccionada["latitud"].ToString();
+                longitud = filaSeleccionada["longitud"].ToString();
+            }//Console.WriteLine(latitud);
+
+            GoogleMaps1.Latitude = double.Parse(latitud);//están llegando vacios los parametros revisar porque
+            GoogleMaps1.Longitude = double.Parse(longitud);//si lo borro no olvidar el autopstback
+            GoogleMaps1.Zoom = 16;
+
+        }
+
+        
     }
 }
