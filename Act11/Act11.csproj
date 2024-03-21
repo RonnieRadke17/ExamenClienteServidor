@@ -187,6 +187,7 @@
     <Content Include="Connected Services\WSCS\Act11.WSCS.ModificacionResponse.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Content>
+    <Content Include="Alumnos\Web.config" />
     <None Include="Connected Services\WSCS\WSCS.disco" />
     <None Include="Connected Services\WSCS\configuration91.svcinfo" />
     <None Include="Connected Services\WSCS\configuration.svcinfo" />
@@ -217,6 +218,8 @@
     <Content Include="Maestros\Maestros.aspx" />
     <Content Include="RegistroVehicular\Web.config" />
     <None Include="Connected Services\WSCS\WSCS.wsdl" />
+    <Content Include="Directivos\Web.config" />
+    <Content Include="Maestros\Web.config" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="RegistroVehicular\Vehiculos.aspx" />
     <Content Include="Scripts\bootstrap.js" />

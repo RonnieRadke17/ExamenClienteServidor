@@ -213,6 +213,24 @@ namespace Act11.RegistroVehicular
         protected global::System.Web.UI.WebControls.TextBox txtMatricula;
 
         /// <summary>
+        /// Control btnBuscarMatricula.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnBuscarMatricula;
+
+        /// <summary>
+        /// Control btnLimpiarMatricular.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnLimpiarMatricular;
+
+        /// <summary>
         /// Control RBDuenoActual.
         /// </summary>
         /// <remarks>

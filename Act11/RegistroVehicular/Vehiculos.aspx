@@ -56,6 +56,8 @@
     
     <br>
     <asp:TextBox ID="txtMatricula" runat="server" placeholder="Matricula"></asp:TextBox>
+    <asp:Button ID="btnBuscarMatricula" runat="server" Text="Buscar" OnClick="btnBuscarMatricula_Click"/>
+    <asp:Button ID="btnLimpiarMatricular" runat="server" Text="Limpiar" OnClick="btnLimpiarMatricular_Click"/>
     <br>
     <!---Falta implementar los radioButtons y un textArea---->
     <asp:RadioButton ID="RBDuenoActual" runat="server" GroupName="grpDueno" Text="Dueño actual" />

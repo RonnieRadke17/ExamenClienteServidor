@@ -112,6 +112,7 @@ namespace Act11.RegistroVehicular
 
         protected void GVDuenos_SelectedIndexChanged(object sender, EventArgs e)
         {
+            DLInfoDueno.Enabled = true;
             DLInfoDueno.Visible = true;
             GoogleMaps1.Latitude = double.Parse(GVDuenos.SelectedRow.Cells[11].Text.ToString());
             GoogleMaps1.Longitude = double.Parse(GVDuenos.SelectedRow.Cells[12].Text.ToString());
@@ -133,7 +134,7 @@ namespace Act11.RegistroVehicular
 
         protected void btnModificar_Click(object sender, EventArgs e)
         {
-
+            //modifica todos los valores de el registro hasta la placa
         }
 
         protected void bntEliminar_Click(object sender, EventArgs e)
@@ -222,7 +223,6 @@ namespace Act11.RegistroVehicular
             string numSerie = GVVehiculos.SelectedRow.Cells[2].Text.Trim();
         }
 
-
         protected void MostrarPropietarioActual()
         {
             string numSerie = GVVehiculos.SelectedRow.Cells[2].Text.Trim();
@@ -249,19 +249,53 @@ namespace Act11.RegistroVehicular
             GVDuenos.DataBind();
         }
 
-
-
-
         protected void btnLimpiar_Click(object sender, EventArgs e)
         {
             DLInfoDueno.Visible= false;
+            DLInfoDueno.Enabled = false;
             GVVehiculos.DataBind();
             GVDuenos.DataBind();
         }
 
+        protected void btnBuscarMatricula_Click(object sender, EventArgs e)
+        {
+            string matriculaABuscar = txtMatricula.Text.Trim(); // revisar si se descencripta o no
+            matriculaABuscar = WS.Encriptar(matriculaABuscar);
+            //string placaABuscar = txtPlaca.Text.Trim(); // Obtener la placa ingresada por el usuario
+
+            // Construir la consulta SQL para buscar el registro específico
+            string query = @"SELECT dbo.Vehiculos.placa, dbo.Vehiculos.numSerie, dbo.Vehiculos.numMotor, dbo.Marcas.marca, dbo.SubMarcas.submarca, dbo.Modelos.modelo, dbo.Colores.colores, dbo.Combustibles.combustible, dbo.Estados.estado, dbo.Municipios.municipio, dbo.Localidades.localidad, 
+             dbo.Vehiculos.matricula, dbo.Localidades.latitud, dbo.Localidades.longitud, dbo.Marcas.cveMarca, dbo.SubMarcas.cveSubmarca, dbo.Modelos.cveModelo, dbo.Colores.cveColor, dbo.Combustibles.cveCombustible, dbo.Estados.cve_estado, dbo.Municipios.cve_municipio, 
+             dbo.Localidades.cve_localidad
+FROM   dbo.Vehiculos INNER JOIN
+             dbo.Marcas ON dbo.Vehiculos.cveMarca = dbo.Marcas.cveMarca INNER JOIN
+             dbo.SubMarcas ON dbo.Vehiculos.cveSubmarca = dbo.SubMarcas.cveSubmarca INNER JOIN
+             dbo.Modelos ON dbo.Vehiculos.cveModelo = dbo.Modelos.cveModelo INNER JOIN
+             dbo.Colores ON dbo.Vehiculos.cveColor = dbo.Colores.cveColor INNER JOIN
+             dbo.Combustibles ON dbo.Vehiculos.cveCombustible = dbo.Combustibles.cveCombustible INNER JOIN
+             dbo.Estados ON dbo.Vehiculos.cve_estado = dbo.Estados.cve_estado INNER JOIN
+             dbo.Municipios ON dbo.Estados.cve_estado = dbo.Municipios.cve_estado AND dbo.Vehiculos.cve_municipio = dbo.Municipios.cve_municipio INNER JOIN
+             dbo.Localidades ON dbo.Estados.cve_estado = dbo.Localidades.cve_estado AND dbo.Vehiculos.cve_localidad = dbo.Localidades.cve_localidad AND dbo.Municipios.cve_municipio = dbo.Localidades.cve_municipio INNER JOIN
+             dbo.Duenos ON dbo.Vehiculos.numSerie = dbo.Duenos.numSerie INNER JOIN
+             dbo.StatusDuenos ON dbo.Duenos.IdStatusDuenos = dbo.StatusDuenos.IdStatusDuenos
+WHERE(dbo.Vehiculos.matricula = @matricula) AND(dbo.Duenos.IdStatusDuenos = 1)";
+
+            // Establecer el parámetro de la placa en la consulta SQL
+            SqlDataSourceVehiculos.SelectCommand = query;
+            SqlDataSourceVehiculos.SelectParameters.Clear();
+            SqlDataSourceVehiculos.SelectParameters.Add("matricula", matriculaABuscar);
+
+            // Actualizar el GridView con el resultado de la consulta
+            GVVehiculos.DataBind();
 
 
 
+        }
 
+        protected void btnLimpiarMatricular_Click(object sender, EventArgs e)
+        {
+            GVVehiculos.DataBind();
+            GVDuenos.DataBind();
+        }
     }
 }
