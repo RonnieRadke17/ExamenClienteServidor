@@ -142,7 +142,50 @@ WHERE (dbo.Vehiculos.numSerie = @numSerie)";
 
         }
 
-        protected void GVVehiculos_RowDataBound(object sender, GridViewRowEventArgs e)
+
+        protected void GVDuenosOnRow(object sender, GridViewRowEventArgs e)
+        {
+            if (e.Row.RowType == DataControlRowType.DataRow)
+            {
+                // Obtener los datos del registro 
+                string matricula = WS.Desencriptar(DataBinder.Eval(e.Row.DataItem, "matricula").ToString());
+                string nombre = WS.Desencriptar(DataBinder.Eval(e.Row.DataItem, "nombre").ToString());
+                string paterno = WS.Desencriptar(DataBinder.Eval(e.Row.DataItem, "paterno").ToString());
+                string materno = WS.Desencriptar(DataBinder.Eval(e.Row.DataItem, "materno").ToString());
+                string curp = WS.Desencriptar(DataBinder.Eval(e.Row.DataItem, "curp").ToString());
+                string rfc = WS.Desencriptar(DataBinder.Eval(e.Row.DataItem, "rfc").ToString());
+                string sexo = WS.Desencriptar(DataBinder.Eval(e.Row.DataItem, "sexo").ToString());
+                string estado= WS.Desencriptar(DataBinder.Eval(e.Row.DataItem, "estado").ToString());
+                string municipio = WS.Desencriptar(DataBinder.Eval(e.Row.DataItem, "municipio").ToString());
+                string localidad = WS.Desencriptar(DataBinder.Eval(e.Row.DataItem, "localidad").ToString());
+                string latitud = WS.Desencriptar(DataBinder.Eval(e.Row.DataItem, "latitud").ToString());
+                string longitud= WS.Desencriptar(DataBinder.Eval(e.Row.DataItem, "longitud").ToString());
+                string status = WS.Desencriptar(DataBinder.Eval(e.Row.DataItem, "status").ToString());
+                string numSerie = WS.Desencriptar(DataBinder.Eval(e.Row.DataItem, "numSerie").ToString());
+                //descenciptacion
+                e.Row.Cells[1].Text = matricula;
+                e.Row.Cells[2].Text = nombre;
+                e.Row.Cells[3].Text = paterno;
+                e.Row.Cells[4].Text = materno;
+                e.Row.Cells[5].Text = curp;
+                e.Row.Cells[6].Text = rfc;
+                e.Row.Cells[7].Text = sexo;
+                //e.Row.Cells[13].Text = status;
+                e.Row.Cells[14].Text = numSerie;
+                //string decryptedNumSerie = WS.Desencriptar(numSerie); 
+                //string decryptedNumMotor = WS.Desencriptar(numMotor); 
+
+                //e.Row.Cells[2].Text = decryptedNumSerie;
+                //e.Row.Cells[3].Text = decryptedNumMotor;
+                // Repetir el proceso para otros campos que necesites descifrar
+            }
+        }
+            
+
+
+
+
+       protected void GVVehiculos_RowDataBound(object sender, GridViewRowEventArgs e)
         {
             if (e.Row.RowType == DataControlRowType.DataRow)
             {
@@ -312,7 +355,7 @@ WHERE(dbo.Vehiculos.matricula = @matricula) AND(dbo.Duenos.IdStatusDuenos = 1)";
 
         }
 
-        protected void DLInfoDueno_ItemDataBound(object sender, DataListItemEventArgs e)
+        protected void DLInfoDueno_ItemDataBound(object sender, DataListItemEventArgs e)//modificar la encriptación y quitarla usar la vista de duenos
         {
             if (e.Item.ItemType == ListItemType.Item || e.Item.ItemType == ListItemType.AlternatingItem)
             {

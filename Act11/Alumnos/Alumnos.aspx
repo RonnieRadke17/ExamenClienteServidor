@@ -19,7 +19,7 @@
         </SelectParameters>
     </asp:SqlDataSource>
 
-    <asp:DropDownList ID="ddLocalidades" runat="server" DataSourceID="SqlDataSourceLocalidades" DataTextField="localidad" DataValueField="cve_localidad"></asp:DropDownList>
+    <asp:DropDownList ID="ddLocalidades" runat="server" DataSourceID="SqlDataSourceLocalidades" DataTextField="localidad" DataValueField="cve_localidad" AutoPostBack="True"></asp:DropDownList>
 
     <asp:SqlDataSource runat="server" ID="SqlDataSourceLocalidades" ConnectionString='<%$ ConnectionStrings:DefaultConnection %>' SelectCommand="SELECT cve_localidad, localidad FROM Localidades WHERE (cve_estado = @cveEstado) AND (cve_municipio = @cveMunicipio)">
         <SelectParameters>

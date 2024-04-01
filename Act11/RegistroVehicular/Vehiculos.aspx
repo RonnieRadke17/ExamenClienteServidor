@@ -159,7 +159,7 @@
     
     
     <asp:Label ID="Label3" runat="server" Text="GRIDVIEW dueños:"></asp:Label>
-    <asp:GridView ID="GVDuenos" runat="server" AutoGenerateColumns="False" DataSourceID="SqlDataSourceDuenos" DataKeyNames="matricula" OnSelectedIndexChanged="GVDuenos_SelectedIndexChanged">
+    <asp:GridView ID="GVDuenos" runat="server" AutoGenerateColumns="False" DataSourceID="SqlDataSourceDuenos" DataKeyNames="matricula" OnSelectedIndexChanged="GVDuenos_SelectedIndexChanged" OnRowDataBound="GVDuenosOnRow">
         <Columns>
             <asp:CommandField ShowSelectButton="True"></asp:CommandField>
             <asp:BoundField DataField="matricula" HeaderText="matricula" SortExpression="matricula"></asp:BoundField>
